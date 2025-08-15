@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSignInEmailPassword } from '@nhost/react';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff } from 'lucide-react';
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   
   const { signInEmailPassword, isLoading, error } = useSignInEmailPassword();
@@ -90,22 +91,30 @@ const SignIn: React.FC = () => {
               )}
             </div>
 
-            <div>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (errors.password) setErrors({ ...errors, password: undefined });
                 }}
-                className={`w-full px-4 py-3 border-2 rounded-lg bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-0 transition-colors ${
+                className={`w-full px-4 py-3 pr-12 border-2 rounded-lg bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-0 transition-colors ${
                   errors.password 
                     ? 'border-red-500/50 focus:border-red-500' 
                     : 'border-gray-600 focus:border-orange-500'
                 }`}
                 disabled={isLoading}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-400">{errors.password}</p>
               )}

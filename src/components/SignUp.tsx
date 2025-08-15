@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSignUpEmailPassword } from '@nhost/react';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Eye, EyeOff } from 'lucide-react';
 
 const SignUp: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; general?: string }>({});
   const [success, setSuccess] = useState(false);
   
   const { signUpEmailPassword, isLoading, error } = useSignUpEmailPassword();
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
+    const newErrors: { name?: string; email?: string; password?: string } = {};
+    
+    if (!name.trim()) {
+      newErrors.name = 'Name is required';
+    }
     
     if (!email.trim()) {
       newErrors.email = 'Email address is required';
@@ -97,6 +103,27 @@ const SignUp: React.FC = () => {
           <div className="space-y-4">
             <div>
               <input
+                type="text"
+                placeholder="Full name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (errors.name) setErrors({ ...errors, name: undefined });
+                }}
+                className={`w-full px-4 py-3 border-2 rounded-lg bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-0 transition-colors ${
+                  errors.name 
+                    ? 'border-red-500/50 focus:border-red-500' 
+                    : 'border-gray-600 focus:border-orange-500'
+                }`}
+                disabled={isLoading}
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-400">{errors.name}</p>
+              )}
+            </div>
+
+            <div>
+              <input
                 type="email"
                 placeholder="Email address"
                 value={email}
@@ -116,22 +143,30 @@ const SignUp: React.FC = () => {
               )}
             </div>
 
-            <div>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   if (errors.password) setErrors({ ...errors, password: undefined });
                 }}
-                className={`w-full px-4 py-3 border-2 rounded-lg bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-0 transition-colors ${
+                className={`w-full px-4 py-3 pr-12 border-2 rounded-lg bg-gray-800 placeholder-gray-400 text-white focus:outline-none focus:ring-0 transition-colors ${
                   errors.password 
                     ? 'border-red-500/50 focus:border-red-500' 
                     : 'border-gray-600 focus:border-orange-500'
                 }`}
                 disabled={isLoading}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-400">{errors.password}</p>
               )}
