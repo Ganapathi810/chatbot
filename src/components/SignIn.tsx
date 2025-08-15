@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSignUpEmailPassword } from '@nhost/react';
-import { UserPlus } from 'lucide-react';
+import { useSignInEmailPassword } from '@nhost/react';
+import { LogIn } from 'lucide-react';
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
-  const [success, setSuccess] = useState(false);
   
-  const { signUpEmailPassword, isLoading, error } = useSignUpEmailPassword();
+  const { signInEmailPassword, isLoading, error } = useSignInEmailPassword();
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -22,8 +21,6 @@ const SignUp: React.FC = () => {
     
     if (!password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
     }
     
     setErrors(newErrors);
@@ -38,47 +35,24 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const result = await signUpEmailPassword(email, password);
+      const result = await signInEmailPassword(email, password);
       if (result.error) {
         setErrors({ general: result.error.message });
-      } else {
-        setSuccess(true);
       }
     } catch (err) {
       setErrors({ general: 'An unexpected error occurred. Please try again.' });
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-        <div className="w-full max-w-md text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-6 shadow-lg shadow-orange-500/25">
-            <UserPlus className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-4">Account Created!</h1>
-          <p className="text-gray-400 mb-6">
-            Your account has been created successfully. You can now sign in.
-          </p>
-          <Link 
-            to="/signin" 
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40"
-          >
-            Go to Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-6 shadow-lg shadow-orange-500/25">
-            <UserPlus className="w-8 h-8 text-white" />
+            <LogIn className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Create your account</h1>
+          <h1 className="text-3xl font-bold text-white">Welcome back</h1>
+          <p className="text-gray-400 mt-2">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,18 +115,19 @@ const SignUp: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
+            className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40"
           >
-            {isLoading ? 'Creating account...' : 'Sign up'}
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
 
           <div className="text-center">
-            <p className="text-gray-600">
-              Already have an account?{' '}
+            <p className="text-gray-400">
+              Don't have an account?{' '}
               <Link 
-                to="/signin" 
-                className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors duration-200"
+                to="/signup" 
+                className="text-orange-400 hover:text-orange-300 font-medium transition-colors duration-200"
               >
-                Sign in
+                Sign up
               </Link>
             </p>
           </div>
@@ -162,4 +137,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
