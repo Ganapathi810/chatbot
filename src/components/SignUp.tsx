@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSignUpEmailPassword } from '@nhost/react';
-import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { Bot, Eye, EyeOff, Sparkles, CheckCircle } from 'lucide-react';
 
 const SignUp: React.FC = () => {
   const [name, setName] = useState('');
@@ -57,45 +57,69 @@ const SignUp: React.FC = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-        <div className="w-full max-w-md text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-2xl mb-6 shadow-lg shadow-green-500/25">
-            <UserPlus className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        <div className="w-full max-w-md text-center relative z-10 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-3xl mb-6 shadow-2xl shadow-green-500/30 animate-bounce-subtle">
+            <CheckCircle className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-4">Account Created!</h1>
-          <p className="text-gray-400 mb-6">
-            Your account has been created successfully. You can now sign in.
-          </p>
-          <Link 
-            to="/signin" 
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40"
-          >
-            Go to Sign In
-          </Link>
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700/50">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+              Welcome to ChatMind AI!
+            </h1>
+            <p className="text-gray-400 mb-6">
+              Your account has been created successfully. You're ready to start your AI-powered conversations.
+            </p>
+            <Link 
+              to="/signin" 
+              className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transform"
+            >
+              Start Chatting
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+      
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-6 shadow-lg shadow-orange-500/25">
-            <UserPlus className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mb-6 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
+            <Bot className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Create your account</h1>
+          <div className="flex items-center justify-center mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              ChatMind AI
+            </h1>
+            <Sparkles className="w-6 h-6 text-orange-400 ml-2 animate-twinkle" />
+          </div>
+          <p className="text-orange-400 font-medium mb-2">Your Intelligent Conversation Partner</p>
+          <p className="text-gray-400 text-sm">Join thousands of users experiencing the future of AI chat</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700/50 animate-slide-up">
+          <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
-            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 animate-shake">
               <p className="text-red-400 text-sm">{errors.general}</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 animate-shake">
               <p className="text-red-400 text-sm">{error.message}</p>
             </div>
           )}
@@ -176,9 +200,9 @@ const SignUp: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40"
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transform"
           >
-            {isLoading ? 'Creating account...' : 'Sign up'}
+            {isLoading ? 'Creating your AI account...' : 'Start Your AI Journey'}
           </button>
 
           <div className="text-center">
@@ -186,13 +210,14 @@ const SignUp: React.FC = () => {
               Already have an account?{' '}
               <Link 
                 to="/signin" 
-                className="text-orange-400 hover:text-orange-300 font-medium transition-colors duration-200"
+                className="text-orange-400 hover:text-orange-300 font-medium transition-all duration-200 hover:underline"
               >
                 Sign in
               </Link>
             </p>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
