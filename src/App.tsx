@@ -1,9 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { NhostProvider, useAuthenticationStatus } from '@nhost/react';
-import { ApolloProvider } from '@apollo/client';
+import { NhostProvider } from '@nhost/react';
 import { nhost } from './lib/nhost';
-import { apolloClient } from './lib/apollo';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import ChatHome from './components/ChatHome';
@@ -14,39 +12,18 @@ const LoadingSpinner: React.FC = () => (
   </div>
 );
 
-const AuthenticatedApp: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuthenticationStatus();
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  return (
-    <Router>
-      <Routes>
-        {isAuthenticated ? (
-          <>
-            <Route path="/chat" element={<ChatHome />} />
-            <Route path="*" element={<Navigate to="/chat" replace />} />
-          </>
-        ) : (
-          <>
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="*" element={<Navigate to="/signin" replace />} />
-          </>
-        )}
-      </Routes>
-    </Router>
-  );
-};
 
 const App: React.FC = () => {
   return (
     <NhostProvider nhost={nhost}>
-      <ApolloProvider client={apolloClient}>
-        <AuthenticatedApp />
-      </ApolloProvider>
+      <Router>
+        <Routes>
+          <Route path="/chat" element={<ChatHome />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="*" element={<Navigate to="/chat" replace />} />
+        </Routes>
+      </Router>
     </NhostProvider>
   );
 };
