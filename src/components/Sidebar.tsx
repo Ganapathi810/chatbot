@@ -1,0 +1,226 @@
+import React, { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { useSignOut, useUserData } from '@nhost/react';
+import { GET_CHATS, CREATE_CHAT } from '../graphql/queries';
+import { 
+  Bot, 
+  Plus, 
+  MessageCircle, 
+  ChevronLeft, 
+  ChevronRight, 
+  LogOut, 
+  User,
+  Sparkles 
+} from 'lucide-react';
+
+interface Chat {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  messages: Array<{
+    content: string;
+    created_at: string;
+    is_bot: boolean;
+  }>;
+}
+
+interface SidebarProps {
+  selectedChatId: string | null;
+  onSelectChat: (chatId: string) => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ 
+  selectedChatId, 
+  onSelectChat, 
+  isCollapsed, 
+  onToggleCollapse 
+}) => {
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { data, loading, error } = useQuery(GET_CHATS);
+  const [createChat] = useMutation(CREATE_CHAT, {
+    refetchQueries: [{ query: GET_CHATS }],
+  });
+  const { signOut } = useSignOut();
+  const user = useUserData();
+
+  const chats: Chat[] = data?.chats || [];
+
+  const handleCreateChat = async () => {
+    try {
+      const result = await createChat({
+        variables: {
+          title: `New Chat ${new Date().toLocaleString()}`,
+        },
+      });
+      if (result.data?.insert_chats_one) {
+        onSelectChat(result.data.insert_chats_one.id);
+      }
+    } catch (err) {
+      console.error('Error creating chat:', err);
+    }
+  };
+
+  const handleSignOut = () => {
+    signOut();
+  };
+
+  const truncateTitle = (title: string, maxLength: number = 25) => {
+    return title.length > maxLength ? `${title.substring(0, maxLength)}...` : title;
+  };
+
+  return (
+    <div className={`bg-gray-900/95 backdrop-blur-sm border-r border-gray-700/50 flex flex-col transition-all duration-300 ease-in-out ${
+      isCollapsed ? 'w-16' : 'w-80'
+    }`}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-700/50">
+        <div className="flex items-center justify-between">
+          {!isCollapsed && (
+            <div className="flex items-center space-x-3 animate-fade-in">
+              <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center">
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    ChatMind AI
+                  </h1>
+                  <Sparkles className="w-4 h-4 text-orange-400 ml-1 animate-twinkle" />
+                </div>
+                <p className="text-xs text-orange-400">Intelligent Conversations</p>
+              </div>
+            </div>
+          )}
+          
+          <button
+            onClick={onToggleCollapse}
+            className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all duration-200 hover:scale-105"
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* New Chat Button */}
+      <div className="p-4">
+        <button
+          onClick={handleCreateChat}
+          className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 ${
+            isCollapsed ? 'p-3' : 'py-3 px-4'
+          }`}
+          title="New Chat"
+        >
+          <div className="flex items-center justify-center space-x-2">
+            <Plus className="w-4 h-4" />
+            {!isCollapsed && <span>New Chat</span>}
+          </div>
+        </button>
+      </div>
+
+      {/* Chat List */}
+      <div className="flex-1 overflow-y-auto px-2">
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-8 text-red-400 text-sm">
+            Error loading chats
+          </div>
+        ) : chats.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {!isCollapsed && (
+              <div className="animate-fade-in">
+                <MessageCircle className="w-8 h-8 mx-auto mb-2 text-gray-600" />
+                <p className="text-sm">No chats yet</p>
+                <p className="text-xs text-gray-600">Create your first chat</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-1 pb-4">
+            {chats.map((chat) => (
+              <div key={chat.id} className="relative group">
+                <button
+                  onClick={() => onSelectChat(chat.id)}
+                  className={`w-full text-left p-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 ${
+                    selectedChatId === chat.id
+                      ? 'bg-orange-500/10 border border-orange-500/20 text-orange-300'
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                  title={isCollapsed ? chat.title : undefined}
+                >
+                  <div className="flex items-center space-x-3">
+                    <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                    {!isCollapsed && (
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium truncate">
+                          {truncateTitle(chat.title)}
+                        </h3>
+                        {chat.messages.length > 0 && (
+                          <p className="text-xs text-gray-500 truncate mt-1">
+                            {truncateTitle(chat.messages[0].content, 30)}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </button>
+                
+                {/* Tooltip for collapsed state */}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    {chat.title}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* User Menu */}
+      <div className="border-t border-gray-700/50 p-4 relative">
+        <button
+          onClick={() => setShowUserMenu(!showUserMenu)}
+          className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800/50 transition-all duration-200 text-gray-300 hover:text-white"
+        >
+          <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4" />
+          </div>
+          {!isCollapsed && (
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium truncate">{user?.email}</p>
+              <p className="text-xs text-gray-500">Online</p>
+            </div>
+          )}
+        </button>
+
+        {/* Dropdown Menu */}
+        {showUserMenu && (
+          <div className={`absolute bottom-full mb-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 animate-slide-up ${
+            isCollapsed ? 'left-full ml-2' : 'left-0 right-0'
+          }`}>
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-gray-700 rounded-lg transition-colors duration-200 text-red-400 hover:text-red-300"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;

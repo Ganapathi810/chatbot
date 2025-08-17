@@ -1,73 +1,116 @@
-import React, { useState } from 'react';
-import { useSignOut, useUserData } from '@nhost/react';
-import { LogOut, MessageCircle } from 'lucide-react';
-import ChatList from './ChatList';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_CHATS } from '../graphql/queries';
+import Sidebar from './Sidebar';
+import TopBar from './TopBar';
 import MessageView from './MessageView';
+import { MessageCircle, Sparkles } from 'lucide-react';
 
 const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
-  const { signOut } = useSignOut();
-  const user = useUserData();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { data } = useQuery(GET_CHATS);
 
-  const handleSignOut = () => {
-    signOut();
-  };
+  const chats = data?.chats || [];
+  const selectedChat = chats.find((chat: any) => chat.id === selectedChatId);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 'n':
+            e.preventDefault();
+            // Trigger new chat creation
+            break;
+          case 'b':
+            e.preventDefault();
+            setIsCollapsed(!isCollapsed);
+            break;
+        }
+      }
+      if (e.key === 'Escape') {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCollapsed]);
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <MessageCircle className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Chat Assistant</h1>
-              <p className="text-sm text-gray-500">Welcome back, {user?.email}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </button>
-        </div>
+    <div className="h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/3 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        <ChatList 
-          selectedChatId={selectedChatId} 
-          onSelectChat={setSelectedChatId} 
+      <div className="relative z-10 flex w-full">
+        {/* Sidebar */}
+        <Sidebar
+          selectedChatId={selectedChatId}
+          onSelectChat={setSelectedChatId}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
         />
-        
-        {selectedChatId ? (
-          <MessageView chatId={selectedChatId} />
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center text-gray-500">
-              <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h2 className="text-xl font-medium text-gray-900 mb-2">
-                Welcome to Chat Assistant
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Select a chat from the sidebar or create a new one to start chatting
-              </p>
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 max-w-md">
-                <h3 className="font-medium text-gray-900 mb-2">Features:</h3>
-                <ul className="text-sm text-gray-600 space-y-1 text-left">
-                  <li>• Real-time messaging with GraphQL subscriptions</li>
-                  <li>• AI-powered chatbot responses</li>
-                  <li>• Create and manage multiple chats</li>
-                  <li>• Persistent message history</li>
-                </ul>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Top Bar */}
+          <TopBar selectedChatTitle={selectedChat?.title} />
+
+          {/* Chat Content */}
+          {selectedChatId ? (
+            <MessageView chatId={selectedChatId} />
+          ) : (
+            <div className="flex-1 flex items-center justify-center relative">
+              <div className="text-center max-w-2xl mx-auto px-8 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mb-8 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
+                  <MessageCircle className="w-10 h-10 text-white" />
+                </div>
+                
+                <div className="flex items-center justify-center mb-4">
+                  <h2 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Welcome to ChatMind AI
+                  </h2>
+                  <Sparkles className="w-8 h-8 text-orange-400 ml-3 animate-twinkle" />
+                </div>
+                
+                <p className="text-xl text-orange-400 font-medium mb-6">
+                  Your Intelligent Conversation Partner
+                </p>
+                
+                <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+                  Start a new conversation or select an existing chat from the sidebar to continue where you left off
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
+                    <h3 className="font-semibold text-white mb-2">🚀 AI-Powered</h3>
+                    <p className="text-sm text-gray-400">Advanced AI responses with context awareness</p>
+                  </div>
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
+                    <h3 className="font-semibold text-white mb-2">⚡ Real-time</h3>
+                    <p className="text-sm text-gray-400">Instant messaging with live updates</p>
+                  </div>
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
+                    <h3 className="font-semibold text-white mb-2">💾 Persistent</h3>
+                    <p className="text-sm text-gray-400">All conversations saved automatically</p>
+                  </div>
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
+                    <h3 className="font-semibold text-white mb-2">🎨 Beautiful</h3>
+                    <p className="text-sm text-gray-400">Modern, responsive design</p>
+                  </div>
+                </div>
+                
+                <div className="mt-8 text-sm text-gray-500">
+                  <p>Keyboard shortcuts: <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+N</kbd> New Chat • <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+B</kbd> Toggle Sidebar</p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

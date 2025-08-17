@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useSubscription, useMutation } from '@apollo/client';
 import { useUserData } from '@nhost/react';
 import { SUBSCRIBE_TO_MESSAGES, SEND_MESSAGE, TRIGGER_CHATBOT } from '../graphql/queries';
-import { Send, Bot, User } from 'lucide-react';
+import MessageBubble from './MessageBubble';
+import TypingIndicator from './TypingIndicator';
+import ChatInput from './ChatInput';
 
 interface Message {
   id: string;
@@ -17,8 +19,8 @@ interface MessageViewProps {
 }
 
 const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
-  const [messageText, setMessageText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
@@ -29,7 +31,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
-  const messages: Message[] = data?.messages || [];
+  const messages: Message[] = useMemo(() => data?.messages || [], [data?.messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,20 +39,17 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim() || !user?.id || isLoading) return;
 
-    const currentMessage = messageText.trim();
-    setMessageText('');
+    const currentMessage = messageText;
     setIsLoading(true);
 
     try {
       // Send user message
-      await sendMessage({
+      const userMessageResult = await sendMessage({
         variables: {
           chatId,
           content: currentMessage,
@@ -59,15 +58,30 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
       });
 
       // Trigger chatbot response
-      await triggerChatbot({
+      const botResult = await triggerChatbot({
         variables: {
           chatId,
           message: currentMessage,
         },
       });
+      
+      // Set streaming effect for the bot response
+      if (botResult.data?.chatbot_response?.success) {
+        // Find the latest bot message and set it for streaming
+        setTimeout(() => {
+          const latestMessages = data?.messages || [];
+          const latestBotMessage = latestMessages
+            .filter((msg: Message) => msg.is_bot)
+            .sort((a: Message, b: Message) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+          
+          if (latestBotMessage) {
+            setStreamingMessageId(latestBotMessage.id);
+            setTimeout(() => setStreamingMessageId(null), latestBotMessage.content.length * 30 + 1000);
+          }
+        }, 500);
+      }
     } catch (err) {
       console.error('Error sending message:', err);
-      setMessageText(currentMessage); // Restore message on error
     } finally {
       setIsLoading(false);
     }
@@ -75,103 +89,54 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
+      <div className="flex-1 flex items-center justify-center">
         <p className="text-red-600">Error loading messages</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center text-gray-500">
-              <Bot className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-              <p>Start a conversation</p>
-              <p className="text-sm">Send a message to begin chatting</p>
+    <div className="flex-1 flex flex-col relative">
+      {messages.length === 0 ? (
+        <ChatInput 
+          onSendMessage={handleSendMessage} 
+          isLoading={isLoading} 
+          hasMessages={false}
+        />
+      ) : (
+        <>
+          {/* Messages Container */}
+          <div className="flex-1 overflow-y-auto px-6 py-6 pb-32">
+            <div className="max-w-4xl mx-auto space-y-1">
+              {messages.map((message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  isStreaming={streamingMessageId === message.id}
+                />
+              ))}
+              
+              {isLoading && <TypingIndicator />}
+              <div ref={messagesEndRef} />
             </div>
           </div>
-        ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.is_bot ? 'justify-start' : 'justify-end'}`}
-            >
-              <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                  message.is_bot
-                    ? 'bg-white text-gray-800 shadow-sm'
-                    : 'bg-indigo-600 text-white'
-                }`}
-              >
-                <div className="flex items-start space-x-2">
-                  {message.is_bot ? (
-                    <Bot className="w-4 h-4 mt-0.5 text-indigo-600 flex-shrink-0" />
-                  ) : (
-                    <User className="w-4 h-4 mt-0.5 text-indigo-200 flex-shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-sm">{message.content}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        message.is_bot ? 'text-gray-500' : 'text-indigo-200'
-                      }`}
-                    >
-                      {new Date(message.created_at).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm">
-              <div className="flex items-center space-x-2">
-                <Bot className="w-4 h-4 text-indigo-600" />
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      {/* Message Input */}
-      <div className="border-t border-gray-200 bg-white p-4">
-        <form onSubmit={handleSendMessage} className="flex space-x-2">
-          <input
-            type="text"
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            placeholder="Type your message..."
-            disabled={isLoading}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100"
+          {/* Chat Input */}
+          <ChatInput 
+            onSendMessage={handleSendMessage} 
+            isLoading={isLoading} 
+            hasMessages={true}
           />
-          <button
-            type="submit"
-            disabled={!messageText.trim() || isLoading}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white p-2 rounded-lg transition-colors duration-200"
-          >
-            <Send className="w-5 h-5" />
-          </button>
-        </form>
-      </div>
+        </>
+      )}
     </div>
   );
 };
