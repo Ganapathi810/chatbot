@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSignInEmailPassword } from '@nhost/react';
+import { useSignInEmailPassword, useUserData } from '@nhost/react';
 import { Bot, Eye, EyeOff, Sparkles } from 'lucide-react';
 
 const SignIn: React.FC = () => {
@@ -10,6 +10,7 @@ const SignIn: React.FC = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   
   const { signInEmailPassword, isLoading, error } = useSignInEmailPassword();
+  const user = useUserData();
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -38,7 +39,14 @@ const SignIn: React.FC = () => {
     try {
       const result = await signInEmailPassword(email, password);
       if (result.error) {
-        setErrors({ general: result.error.message });
+        // Handle specific error cases
+        if (result.error.message.includes('email-not-verified')) {
+          setErrors({ general: 'Please verify your email address before signing in. Check your inbox for the verification link.' });
+        } else if (result.error.message.includes('invalid-email-password')) {
+          setErrors({ general: 'Invalid email or password. Please check your credentials and try again.' });
+        } else {
+          setErrors({ general: result.error.message });
+        }
       }
     } catch (err) {
       setErrors({ general: 'An unexpected error occurred. Please try again.' });

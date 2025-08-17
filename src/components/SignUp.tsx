@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSignUpEmailPassword } from '@nhost/react';
+import { useSignUpEmailPassword, useUserData } from '@nhost/react';
 import { Bot, Eye, EyeOff, Sparkles, CheckCircle } from 'lucide-react';
 
 const SignUp: React.FC = () => {
@@ -9,9 +9,10 @@ const SignUp: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; general?: string }>({});
-  const [success, setSuccess] = useState(false);
+  const [signUpState, setSignUpState] = useState<'form' | 'email-sent' | 'verified'>('form');
   
   const { signUpEmailPassword, isLoading, error } = useSignUpEmailPassword();
+  const user = useUserData();
 
   const validateForm = () => {
     const newErrors: { name?: string; email?: string; password?: string } = {};
@@ -48,14 +49,64 @@ const SignUp: React.FC = () => {
       if (result.error) {
         setErrors({ general: result.error.message });
       } else {
-        setSuccess(true);
+        // Check if email confirmation is required
+        if (result.needsEmailVerification) {
+          setSignUpState('email-sent');
+        } else {
+          setSignUpState('verified');
+        }
       }
     } catch (err) {
       setErrors({ general: 'An unexpected error occurred. Please try again.' });
     }
   };
 
-  if (success) {
+  // Show email verification sent message
+  if (signUpState === 'email-sent') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        <div className="w-full max-w-md text-center relative z-10 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl mb-6 shadow-2xl shadow-blue-500/30 animate-bounce-subtle">
+            <Bot className="w-10 h-10 text-white" />
+          </div>
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700/50">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+              Check Your Email
+            </h1>
+            <p className="text-gray-400 mb-4">
+              We've sent a verification email to:
+            </p>
+            <p className="text-blue-400 font-medium mb-6 break-all">
+              {email}
+            </p>
+            <p className="text-gray-400 text-sm mb-6">
+              Please click the verification link in your email to activate your account and start using ChatMind AI.
+            </p>
+            <div className="space-y-3">
+              <Link 
+                to="/signin" 
+                className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transform"
+              >
+                Go to Sign In
+              </Link>
+              <p className="text-gray-500 text-xs">
+                Didn't receive the email? Check your spam folder or try signing up again.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show success message for verified users
+  if (signUpState === 'verified') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
         {/* Animated background elements */}
@@ -73,7 +124,7 @@ const SignUp: React.FC = () => {
               Welcome to ChatMind AI!
             </h1>
             <p className="text-gray-400 mb-6">
-              Your account has been created successfully. You're ready to start your AI-powered conversations.
+              Your account has been created and verified successfully. You're ready to start your AI-powered conversations.
             </p>
             <Link 
               to="/signin" 
