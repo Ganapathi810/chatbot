@@ -78,9 +78,9 @@ const SignIn: React.FC = () => {
 
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700/50 animate-slide-up">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {(errors.general || error) && (
+            {(errors.general || (error && error.message)) && (
               <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 animate-shake">
-                <p className="text-red-400 text-sm">{errors.general || error?.message}</p>
+                <p className="text-red-400 text-sm">{errors.general || error.message}</p>
               </div>
             )}
 
