@@ -53,6 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       const result = await createChat({
         variables: {
           title: `New Chat ${new Date().toLocaleString()}`,
+          userId: user?.id,
         },
       });
       if (result.data?.insert_chats_one) {
@@ -92,6 +93,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
                 <p className="text-xs text-orange-400">Intelligent Conversations</p>
               </div>
+            </div>
+          )}
+          
+          {isCollapsed && (
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25 animate-fade-in">
+              <Bot className="w-6 h-6 text-white" />
             </div>
           )}
           
@@ -158,8 +165,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                   title={isCollapsed ? chat.title : undefined}
                 >
-                  <div className="flex items-center space-x-3">
-                    <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                  <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
+                    <MessageCircle className="w-5 h-5 flex-shrink-0" />
                     {!isCollapsed && (
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium truncate">
@@ -177,8 +184,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
                     {chat.title}
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
                   </div>
                 )}
               </div>
@@ -191,10 +199,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="border-t border-gray-700/50 p-4 relative">
         <button
           onClick={() => setShowUserMenu(!showUserMenu)}
-          className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-800/50 transition-all duration-200 text-gray-300 hover:text-white"
+          className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800/50 transition-all duration-200 text-gray-300 hover:text-white group relative ${
+            isCollapsed ? 'justify-center' : 'space-x-3'
+          }`}
+          title={isCollapsed ? user?.email : undefined}
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
-            <User className="w-4 h-4" />
+          <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-5 h-5" />
           </div>
           {!isCollapsed && (
             <div className="flex-1 text-left">
@@ -202,11 +213,19 @@ const Sidebar: React.FC<SidebarProps> = ({
               <p className="text-xs text-gray-500">Online</p>
             </div>
           )}
+          
+          {/* Tooltip for collapsed state */}
+          {isCollapsed && (
+            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+              {user?.email}
+              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
+            </div>
+          )}
         </button>
 
         {/* Dropdown Menu */}
         {showUserMenu && (
-          <div className={`absolute bottom-full mb-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 animate-slide-up ${
+          <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-50 animate-slide-up ${
             isCollapsed ? 'left-full ml-2' : 'left-0 right-0'
           }`}>
             <button

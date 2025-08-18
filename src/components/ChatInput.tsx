@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useUserData } from '@nhost/react';
 import { Send, Sparkles } from 'lucide-react';
 
 interface ChatInputProps {
@@ -10,7 +11,33 @@ interface ChatInputProps {
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMessages }) => {
   const [message, setMessage] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const user = useUserData();
+
+  const userName = user?.displayName || user?.email?.split('@')[0] || 'there';
+  const welcomeText = `How can I help you today, ${userName}?`;
+
+  useEffect(() => {
+    if (!hasMessages && welcomeText) {
+      setIsTyping(true);
+      setDisplayedText('');
+      
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex < welcomeText.length) {
+          setDisplayedText(welcomeText.slice(0, currentIndex + 1));
+          currentIndex++;
+        } else {
+          setIsTyping(false);
+          clearInterval(typingInterval);
+        }
+      }, 50);
+
+      return () => clearInterval(typingInterval);
+    }
+  }, [welcomeText, hasMessages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,19 +73,19 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-4 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
-              What can I help you with?
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-6">
+              {displayedText}
+              {isTyping && (
+                <span className="inline-block w-0.5 h-6 bg-orange-500 ml-1 animate-pulse"></span>
+              )}
             </h2>
-            <p className="text-gray-400 text-lg">
-              Start a conversation with your AI assistant
-            </p>
           </div>
         )}
         
         <form onSubmit={handleSubmit} className="relative">
-          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-2xl border transition-all duration-300 ${
+          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-2xl border transition-all duration-500 ${
             isFocused 
-              ? 'border-orange-500/50 shadow-lg shadow-orange-500/10 ring-1 ring-orange-500/20' 
+              ? 'border-orange-500/70 shadow-lg shadow-orange-500/20 ring-2 ring-orange-500/30 animate-pulse-border' 
               : 'border-gray-600/50 hover:border-gray-500/50'
           }`}>
             <textarea

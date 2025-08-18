@@ -48,7 +48,7 @@ export const SUBSCRIBE_TO_MESSAGES = gql`
 
 export const CREATE_CHAT = gql`
   mutation CreateChat($title: String!) {
-    insert_chats_one(object: { title: $title }) {
+    insert_chats_one(object: { title: $title, user_id: $userId }) {
       id
       title
       created_at
