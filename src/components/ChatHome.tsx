@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_CHATS } from '../graphql/queries';
+import { useQuery, useMutation } from '@apollo/client';
+import { useUserData } from '@nhost/react';
+import { GET_CHATS, CREATE_CHAT } from '../graphql/queries';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import MessageView from './MessageView';
@@ -9,10 +10,38 @@ import { MessageCircle, Sparkles } from 'lucide-react';
 const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [hasCreatedInitialChat, setHasCreatedInitialChat] = useState(false);
   const { data } = useQuery(GET_CHATS);
+  const [createChat] = useMutation(CREATE_CHAT, {
+    refetchQueries: [{ query: GET_CHATS }],
+  });
+  const user = useUserData();
 
   const chats = data?.chats || [];
   const selectedChat = chats.find((chat: any) => chat.id === selectedChatId);
+
+  // Auto-create and select first chat after login
+  useEffect(() => {
+    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
+      const createInitialChat = async () => {
+        try {
+          const result = await createChat({
+            variables: {
+              title: `New Chat ${new Date().toLocaleString()}`,
+              userId: user.id,
+            },
+          });
+          if (result.data?.insert_chats_one) {
+            setSelectedChatId(result.data.insert_chats_one.id);
+            setHasCreatedInitialChat(true);
+          }
+        } catch (err) {
+          console.error('Error creating initial chat:', err);
+        }
+      };
+      createInitialChat();
+    }
+  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
 
   // Keyboard shortcuts
   useEffect(() => {
