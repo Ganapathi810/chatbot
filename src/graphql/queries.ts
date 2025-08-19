@@ -10,7 +10,7 @@ export const GET_CHATS = gql`
       messages(order_by: { created_at: desc }, limit: 1) {
         content
         created_at
-        is_bot
+        is_from_user
       }
     }
   }
@@ -24,7 +24,7 @@ export const GET_CHAT_MESSAGES = gql`
     ) {
       id
       content
-      is_bot
+      is_from_user
       created_at
       user_id
     }
@@ -39,7 +39,7 @@ export const SUBSCRIBE_TO_MESSAGES = gql`
     ) {
       id
       content
-      is_bot
+      is_from_user
       created_at
       user_id
     }
@@ -47,11 +47,10 @@ export const SUBSCRIBE_TO_MESSAGES = gql`
 `;
 
 export const CREATE_CHAT = gql`
-  mutation CreateChat($title: String!) {
+  mutation CreateChat($title: String!, $userId: uuid!) {
     insert_chats_one(object: { title: $title, user_id: $userId }) {
-      id
       title
-      created_at
+      user_id
     }
   }
 `;
@@ -63,13 +62,13 @@ export const SEND_MESSAGE = gql`
         chat_id: $chatId, 
         content: $content, 
         user_id: $userId,
-        is_bot: false 
+        is_from_user: true 
       }
     ) {
       id
       content
       created_at
-      is_bot
+      is_from_user
     }
   }
 `;
@@ -78,7 +77,6 @@ export const TRIGGER_CHATBOT = gql`
   mutation TriggerChatbot($chatId: uuid!, $message: String!) {
     chatbot_response(chat_id: $chatId, message: $message) {
       response
-      success
     }
   }
 `;

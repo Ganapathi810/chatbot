@@ -9,7 +9,7 @@ import ChatInput from './ChatInput';
 interface Message {
   id: string;
   content: string;
-  is_bot: boolean;
+  is_from_user: boolean;
   created_at: string;
   user_id: string;
 }
@@ -71,7 +71,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
         setTimeout(() => {
           const latestMessages = data?.messages || [];
           const latestBotMessage = latestMessages
-            .filter((msg: Message) => msg.is_bot)
+            .filter((msg: Message) => msg.is_from_user)
             .sort((a: Message, b: Message) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
           
           if (latestBotMessage) {
@@ -96,6 +96,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
   }
 
   if (error) {
+    console.log(error)
     return (
       <div className="flex-1 flex items-center justify-center">
         <p className="text-red-600">Error loading messages</p>
@@ -103,42 +104,37 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
     );
   }
 
-  return (
-    <div className="flex-1 flex flex-col relative">
-      {messages.length === 0 ? (
-        <ChatInput 
-          onSendMessage={handleSendMessage} 
-          isLoading={isLoading} 
-          hasMessages={false}
-        />
-      ) : (
-        <>
-          {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 pb-32">
-            <div className="max-w-4xl mx-auto space-y-1">
-              {messages.map((message) => (
+    return (
+      <div className="flex-1 flex flex-col relative">
+        {/* Messages Container */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 pb-32">
+          <div className="max-w-4xl mx-auto space-y-1">
+            {messages.length > 0 ? (
+              messages.map((message) => (
                 <MessageBubble
                   key={message.id}
                   message={message}
                   isStreaming={streamingMessageId === message.id}
                 />
-              ))}
-              
-              {isLoading && <TypingIndicator />}
-              <div ref={messagesEndRef} />
-            </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">No messages yet. Start the conversation 👋</p>
+            )}
+            
+            {isLoading && <TypingIndicator />}
+            <div ref={messagesEndRef} />
           </div>
+        </div>
 
-          {/* Chat Input */}
-          <ChatInput 
-            onSendMessage={handleSendMessage} 
-            isLoading={isLoading} 
-            hasMessages={true}
-          />
-        </>
-      )}
-    </div>
-  );
+        {/* Chat Input → always visible */}
+        <ChatInput 
+          onSendMessage={handleSendMessage} 
+          isLoading={isLoading} 
+          hasMessages={messages.length > 0}
+        />
+      </div>
+    );
+
 };
 
 export default MessageView;
