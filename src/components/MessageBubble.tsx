@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useUserData } from '@nhost/react';
 import { Bot, User, Copy, Check } from 'lucide-react';
 
 interface MessageBubbleProps {
@@ -15,6 +16,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   const [displayedContent, setDisplayedContent] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [copied, setCopied] = useState(false);
+  const user = useUserData();
 
   useEffect(() => {
     if (!message.is_bot && isStreaming) {
@@ -58,6 +60,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
       .replace(/\n/g, '<br>');
   };
 
+  const getUserDisplayName = () => {
+    if (user?.displayName) return user.displayName;
+    if (user?.email) return user.email.split('@')[0];
+    return 'You';
+  };
+
   return (
     <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 animate-fade-in`}>
       <div className={`max-w-[80%] ${!message.is_bot ? 'ml-12' : 'mr-12'}`}>
@@ -77,6 +85,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
 
           {/* Message Content */}
           <div className={`relative group ${!message.is_bot ? 'flex flex-col items-end' : ''}`}>
+            {/* Name above message */}
+            <div className={`text-xs text-gray-400 mb-1 ${!message.is_bot ? 'text-right' : 'text-left'}`}>
+              {!message.is_bot ? getUserDisplayName() : 'ChatMind AI'}
+            </div>
+            
             <div className={`px-4 py-3 rounded-2xl shadow-sm ${
               !message.is_bot
                 ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg shadow-orange-500/20'
