@@ -5,7 +5,7 @@ interface MessageBubbleProps {
   message: {
     id: string;
     content: string;
-    is_from_user: boolean;
+    is_bot: boolean;
     created_at: string;
   };
   isStreaming?: boolean;
@@ -17,7 +17,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (message.is_from_user && isStreaming) {
+    if (!message.is_bot && isStreaming) {
       setIsTyping(true);
       setDisplayedContent('');
       
@@ -37,7 +37,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
       setDisplayedContent(message.content);
       setIsTyping(false);
     }
-  }, [message.content, message.is_from_user, isStreaming]);
+  }, [message.content, message.is_bot, isStreaming]);
 
   const handleCopy = async () => {
     try {
@@ -59,28 +59,28 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   };
 
   return (
-    <div className={`flex ${message.is_from_user ? 'justify-start' : 'justify-end'} mb-6 animate-fade-in`}>
-      <div className={`max-w-[80%] ${message.is_from_user ? 'mr-12' : 'ml-12'}`}>
-        <div className={`flex items-start space-x-3 ${message.is_from_user ? '' : 'flex-row-reverse space-x-reverse'}`}>
+    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 animate-fade-in`}>
+      <div className={`max-w-[80%] ${!message.is_bot ? 'ml-12' : 'mr-12'}`}>
+        <div className={`flex items-start space-x-3 ${!message.is_bot ? 'flex-row-reverse space-x-reverse' : ''}`}>
           {/* Avatar */}
           <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-            message.is_from_user 
-              ? 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
-              : 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
+            !message.is_bot 
+              ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
+              : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
           }`}>
-            {message.is_from_user ? (
-              <Bot className="w-4 h-4 text-white" />
-            ) : (
+            {!message.is_bot ? (
               <User className="w-4 h-4 text-white" />
+            ) : (
+              <Bot className="w-4 h-4 text-white" />
             )}
           </div>
 
           {/* Message Content */}
-          <div className={`relative group ${message.is_from_user ? '' : 'flex flex-col items-end'}`}>
+          <div className={`relative group ${!message.is_bot ? 'flex flex-col items-end' : ''}`}>
             <div className={`px-4 py-3 rounded-2xl shadow-sm ${
-              message.is_from_user
-                ? 'bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-100'
-                : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/20'
+              !message.is_bot
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/20'
+                : 'bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-100'
             }`}>
               <div 
                 className="text-sm leading-relaxed"
@@ -94,7 +94,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
 
             {/* Message Actions */}
             <div className={`flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-              message.is_from_user ? '' : 'flex-row-reverse'
+              !message.is_bot ? 'flex-row-reverse' : ''
             }`}>
               <span className="text-xs text-gray-500">
                 {new Date(message.created_at).toLocaleTimeString([], { 
@@ -103,7 +103,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
                 })}
               </span>
               
-              {message.is_from_user && (
+              {message.is_bot && (
                 <button
                   onClick={handleCopy}
                   className="p-1 rounded hover:bg-gray-700/50 transition-colors duration-200"

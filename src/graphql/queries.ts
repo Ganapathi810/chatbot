@@ -10,7 +10,7 @@ export const GET_CHATS = gql`
       messages(order_by: { created_at: desc }, limit: 1) {
         content
         created_at
-        is_from_user
+        is_bot
       }
     }
   }
@@ -24,7 +24,7 @@ export const GET_CHAT_MESSAGES = gql`
     ) {
       id
       content
-      is_from_user
+      is_bot
       created_at
       user_id
     }
@@ -39,7 +39,7 @@ export const SUBSCRIBE_TO_MESSAGES = gql`
     ) {
       id
       content
-      is_from_user
+      is_bot
       created_at
       user_id
     }
@@ -62,13 +62,13 @@ export const SEND_MESSAGE = gql`
         chat_id: $chatId, 
         content: $content, 
         user_id: $userId,
-        is_from_user: true 
+        is_bot: false 
       }
     ) {
       id
       content
       created_at
-      is_from_user
+      is_bot
     }
   }
 `;

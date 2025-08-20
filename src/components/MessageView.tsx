@@ -9,7 +9,7 @@ import ChatInput from './ChatInput';
 interface Message {
   id: string;
   content: string;
-  is_from_user: boolean;
+  is_bot: boolean;
   created_at: string;
   user_id: string;
 }
@@ -71,7 +71,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
         setTimeout(() => {
           const latestMessages = data?.messages || [];
           const latestBotMessage = latestMessages
-            .filter((msg: Message) => msg.is_from_user)
+            .filter((msg: Message) => msg.is_bot)
             .sort((a: Message, b: Message) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
           
           if (latestBotMessage) {
