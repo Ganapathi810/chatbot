@@ -60,7 +60,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
       // Trigger chatbot response
       const botResult = await triggerChatbot({
         variables: {
-          chatId: chatId,
+          chat_id: chatId,
           message: currentMessage,
         },
       });
