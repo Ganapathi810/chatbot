@@ -74,9 +74,10 @@ export const SEND_MESSAGE = gql`
 `;
 
 export const TRIGGER_CHATBOT = gql`
-  mutation TriggerChatbot($chatId: uuid!, $message: String!) {
+  mutation TriggerChatbot($chatId: String!, $message: String!) {
     chatbot_response(chat_id: $chatId, message: $message) {
       response
+      success
     }
   }
 `;
