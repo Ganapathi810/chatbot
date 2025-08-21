@@ -113,7 +113,6 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
                 className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 p-2.5 sm:p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 disabled:hover:scale-100 disabled:hover:shadow-none flex items-center justify-center"
               >
                 <Send className="w-4 h-4 sm:w-5 sm:h-5 transform rotate-[30deg]" />
-                <Send className="w-4 h-4 sm:w-5 sm:h-5 transform rotate-[35deg]" />
               </button>
             </div>
           </div>
