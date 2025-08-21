@@ -152,7 +152,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                   />
                 ))}
                 
-                <div ref={messagesEndRef} className="h-4" />
+                <div ref={messagesEndRef} className="h-8 sm:h-12" />
               </div>
             </div>
 
