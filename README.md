@@ -24,16 +24,16 @@ User Registration/Login → Chat Dashboard → Create/Select Chat → Send Messa
 
 ### AI Response Workflow (n8n Integration)
 ```
-User Message → Webhook → GraphQL → HTTP Request → AI Service → Code Processing → GraphQL → Response
+Hasura Action → Webhook → Check Chat Ownership → Merge Data → OpenRouter API → Format Response → Save to Database → Response
 ```
 
 ### Technical Flow
 ```
 React Frontend ↔ Apollo Client ↔ Supabase GraphQL ↔ PostgreSQL Database
                                         ↓
-                              n8n Workflow Automation
+                              Hasura Actions → n8n Workflow
                                         ↓
-                              AI Service Integration
+                              OpenRouter (GPT-3.5-turbo)
 ```
 
 ## 🛠️ Technologies Used
@@ -51,7 +51,8 @@ React Frontend ↔ Apollo Client ↔ Supabase GraphQL ↔ PostgreSQL Database
 - **PostgreSQL** - Relational database with Row Level Security
 - **GraphQL** - API query language with real-time subscriptions
 - **Hasura Actions** - Custom business logic for AI integration
-- **n8n** - Workflow automation for AI response processing
+- **n8n** - Workflow automation platform
+- **OpenRouter** - AI API gateway (GPT-3.5-turbo)
 - **WebSocket** - Real-time bidirectional communication
 
 ## 🚀 Quick Start
@@ -83,13 +84,16 @@ Create a `.env` file:
 ```env
 VITE_SUPABASE_URL=your-supabase-project-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-N8N_WEBHOOK_URL=your-n8n-webhook-endpoint
+HASURA_GRAPHQL_ENDPOINT=your-hasura-endpoint
+HASURA_ADMIN_SECRET=your-hasura-admin-secret
+OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
-5. **Set up n8n workflow**
-   - Import the n8n workflow from `/workflows/chatbot-response.json`
-   - Configure your AI service endpoints
-   - Set up webhook triggers
+5. **Set up n8n workflow and Hasura Actions**
+   - Create Hasura Action for `chatbot_response`
+   - Import the n8n workflow configuration
+   - Configure OpenRouter API integration
+   - Set up webhook endpoint in n8n
 
 6. **Start the development server**
 ```bash
@@ -117,14 +121,41 @@ src/
 
 ## 🤖 AI Integration
 
-The application uses **n8n workflow automation** to process AI responses:
+The application uses **Hasura Actions + n8n workflow** to process AI responses through OpenRouter:
 
-1. **Webhook Trigger**: Receives message from frontend
-2. **GraphQL Query**: Fetches chat context from Supabase
-3. **HTTP Request**: Sends message to AI service (OpenAI/Claude/etc.)
-4. **Code Processing**: Formats and validates AI response
-5. **GraphQL Mutation**: Saves AI response back to database
-6. **Real-time Update**: Frontend receives response via subscription
+### n8n Workflow Steps:
+
+1. **Hasura Action → Webhook**
+   - Hasura calls a webhook when a user sends a chat message
+   - The webhook request contains the user's Bearer token (from Nhost authentication)
+
+2. **Check Chat Ownership (GraphQL Node)**
+   - A GraphQL query checks if the chat belongs to the logged-in user
+   - If the chat exists, it is returned
+
+3. **Merge Webhook + GraphQL Data**
+   - Combines the Bearer token from the webhook
+   - Combines the chat data from GraphQL
+
+4. **If Node (Does Chat Exist?)**
+   - If the chat exists → continue
+   - If not → return an error or stop the workflow
+
+5. **Call OpenRouter (HTTP Request)**
+   - Sends the chat message to OpenRouter using the model `openai/gpt-3.5-turbo`
+   - Gets back the AI's response
+
+6. **Merge AI Response + Token**
+   - Combines the AI response with the user's Bearer token
+
+7. **Format Response (Code Node)**
+   - Formats the OpenRouter response into clean JSON
+
+8. **Save to Hasura (GraphQL Mutation)**
+   - Stores the AI response in the database, linked to the correct chat and user
+
+9. **Send Response Back**
+   - Sends the AI response back to Hasura, completing the action
 
 ## 🔒 Database Schema
 
