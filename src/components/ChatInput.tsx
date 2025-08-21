@@ -74,7 +74,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
   }, [message]);
 
   const inputContainerClass = hasMessages 
-    ? `fixed bottom-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700/50 p-3 sm:p-4 ${
+    ? `fixed bottom-0 right-0 p-3 sm:p-4 ${
         isCollapsed ? 'left-0' : 'left-80'
       }`
     : "flex items-center justify-center min-h-[60vh]";
