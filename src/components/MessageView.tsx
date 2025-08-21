@@ -114,7 +114,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) 
     return (
       <div className="flex-1 flex flex-col relative">
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 pb-32">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6 pb-32">
           <div className="max-w-4xl mx-auto space-y-1">
             {messages.length > 0 ? (
               messages.map((message) => (

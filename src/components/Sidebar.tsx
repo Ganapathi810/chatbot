@@ -76,8 +76,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className={`bg-gray-900/95 backdrop-blur-sm border-r border-gray-700/50 flex flex-col transition-all duration-300 ease-in-out ${
-      isCollapsed ? 'w-16' : 'w-80'
+    <div className={`bg-gray-900/95 backdrop-blur-sm border-r border-gray-700/50 flex flex-col transition-all duration-300 ease-in-out h-full ${
+      isCollapsed ? 'w-16' : 'w-80 lg:w-80'
     }`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700/50">

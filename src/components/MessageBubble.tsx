@@ -67,36 +67,36 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   };
 
   return (
-    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 animate-fade-in`}>
-      <div className={`max-w-[80%] ${!message.is_bot ? 'ml-12' : 'mr-12'}`}>
-        <div className={`flex items-start space-x-3 ${!message.is_bot ? 'flex-row-reverse space-x-reverse' : ''}`}>
+    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-4 sm:mb-6 animate-fade-in`}>
+      <div className={`max-w-[85%] sm:max-w-[80%] ${!message.is_bot ? 'ml-8 sm:ml-12' : 'mr-8 sm:mr-12'}`}>
+        <div className={`flex items-start space-x-2 sm:space-x-3 ${!message.is_bot ? 'flex-row-reverse space-x-reverse' : ''}`}>
           {/* Avatar */}
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+          <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
             message.is_bot 
               ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
               : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
           }`}>
             {!message.is_bot ? (
-              <User className="w-4 h-4 text-white" />
+              <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
             ) : (
-              <Bot className="w-4 h-4 text-white" />
+              <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
             )}
           </div>
 
           {/* Message Content */}
           <div className={`relative group ${!message.is_bot ? 'flex flex-col items-end' : ''}`}>
             {/* Name above message */}
-            <div className={`text-xs text-gray-400 mb-1 ${!message.is_bot ? 'text-right' : 'text-left'}`}>
+            <div className={`text-xs text-gray-400 mb-1 ${!message.is_bot ? 'text-right' : 'text-left'} hidden sm:block`}>
               {!message.is_bot ? getUserDisplayName() : 'ChatMind AI'}
             </div>
             
-            <div className={`px-4 py-3 rounded-2xl shadow-sm ${
+            <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl shadow-sm ${
               !message.is_bot
                 ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20'
                 : 'bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 text-gray-100 shadow-lg'
             }`}>
               <div 
-                className="text-sm leading-relaxed"
+                className="text-sm sm:text-base leading-relaxed break-words"
                 dangerouslySetInnerHTML={{ __html: formatContent(displayedContent) }}
               />
               
@@ -106,10 +106,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
             </div>
 
             {/* Message Actions */}
-            <div className={`flex items-center space-x-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+            <div className={`flex items-center space-x-2 mt-1 sm:mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
               !message.is_bot ? 'flex-row-reverse' : ''
             }`}>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 hidden sm:inline">
                 {new Date(message.created_at).toLocaleTimeString([], { 
                   hour: '2-digit', 
                   minute: '2-digit' 
@@ -118,13 +118,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
               
               <button
                 onClick={handleCopy}
-                className="p-1 rounded hover:bg-gray-700/50 transition-colors duration-200"
+                className="p-1 rounded hover:bg-gray-700/50 transition-colors duration-200 sm:opacity-100 opacity-70"
                 title="Copy message"
               >
                 {copied ? (
-                  <Check className="w-3 h-3 text-green-400" />
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
                 ) : (
-                  <Copy className="w-3 h-3 text-gray-400 hover:text-gray-300" />
+                  <Copy className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 hover:text-gray-300" />
                 )}
               </button>
             </div>

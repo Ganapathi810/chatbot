@@ -79,13 +79,24 @@ const ChatHome: React.FC = () => {
 
       <div className="relative z-10 flex w-full">
         {/* Sidebar */}
-        <Sidebar
-          selectedChatId={selectedChatId}
-          onSelectChat={setSelectedChatId}
-          isCollapsed={isCollapsed}
-          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-          onNewChatCreated={(chatId) => setNewChatIds(prev => new Set(prev).add(chatId))}
-        />
+        {/* Mobile Overlay */}
+        {!isCollapsed && (
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsCollapsed(true)}
+          />
+        )}
+
+        {/* Sidebar */}
+        <div className={`${isCollapsed ? 'hidden lg:flex' : 'fixed lg:relative'} inset-y-0 left-0 z-50 lg:z-auto`}>
+          <Sidebar
+            selectedChatId={selectedChatId}
+            onSelectChat={setSelectedChatId}
+            isCollapsed={isCollapsed}
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            onNewChatCreated={(chatId) => setNewChatIds(prev => new Set(prev).add(chatId))}
+          />
+        </div>
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
