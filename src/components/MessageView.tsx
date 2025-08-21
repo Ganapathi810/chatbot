@@ -28,27 +28,15 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
-  // Use query for initial load, then subscription for real-time updates
-  const { data: initialData, loading: initialLoading, error } = useQuery(GET_CHAT_MESSAGES, {
+  // Use subscription only for real-time updates - much faster
+  const { data, loading, error } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
     variables: { chatId },
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: false,
-  });
-
-  const { data: subscriptionData } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
-    variables: { chatId },
-    skip: initialLoading,
+    fetchPolicy: 'cache-and-network',
   });
 
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
-  const messages: Message[] = useMemo(() => {
-    const data = subscriptionData || initialData;
-    return data?.messages || [];
-  }, [subscriptionData, initialData]);
-
-  const loading = initialLoading;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ 
