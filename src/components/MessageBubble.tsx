@@ -92,7 +92,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
             
             <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl shadow-sm ${
               !message.is_bot
-                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20'
+                ? 'bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 text-orange-100 shadow-lg shadow-orange-500/10'
                 : 'bg-gray-800/90 backdrop-blur-sm border border-gray-700/60 text-gray-100 shadow-lg shadow-gray-900/20'
             }`}>
               <div 
