@@ -24,9 +24,7 @@ interface MessageViewProps {
 const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, isCollapsed = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessages, setStreamingMessages] = useState<Set<string>>(new Set());
-  const [currentUserMessage, setCurrentUserMessage] = useState<string>('');
-  const [showNewMessagePadding, setShowNewMessagePadding] = useState(false);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [lastMessageCount, setLastMessageCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
@@ -49,92 +47,39 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
   // Auto-scroll to bottom function
-  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ 
-        behavior,
-        block: 'end',
-        inline: 'nearest'
-      });
-    }
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'end'
+        });
+      }
+    }, 100);
   };
 
-  // Check if user is near bottom of messages
-  const isNearBottom = () => {
-    if (!messagesContainerRef.current) return true;
-    
-    const container = messagesContainerRef.current;
-    const threshold = 100; // pixels from bottom
-    
-    return (
-      container.scrollTop + container.clientHeight >= 
-      container.scrollHeight - threshold
-    );
-  };
-
-  // Handle scroll events to determine if we should auto-scroll
-  const handleScroll = () => {
-    setShouldAutoScroll(isNearBottom());
-  };
-
-  // Auto-scroll when new messages arrive (only if user is near bottom)
+  // Auto-scroll when new messages arrive
   useEffect(() => {
-    if (messages.length > 0 && shouldAutoScroll) {
-      // Small delay to ensure DOM is updated
-      setTimeout(() => {
-        scrollToBottom();
-      }, 100);
+    if (messages.length > lastMessageCount) {
+      scrollToBottom();
+      setLastMessageCount(messages.length);
     }
-  }, [messages.length, shouldAutoScroll]);
+  }, [messages.length, lastMessageCount]);
 
-  // Always scroll to bottom when chat changes
+  // Scroll to bottom when chat changes
   useEffect(() => {
     if (chatId) {
-      setShouldAutoScroll(true);
-      setTimeout(() => {
-        scrollToBottom('auto');
-      }, 200);
+      setLastMessageCount(0);
+      scrollToBottom();
     }
   }, [chatId]);
 
-  // Scroll to bottom when starting to type (user sent message)
+  // Scroll to bottom when loading (user sent message)
   useEffect(() => {
-    if (isLoading && shouldAutoScroll) {
+    if (isLoading) {
       scrollToBottom();
     }
-  }, [isLoading, shouldAutoScroll]);
-
-  // Handle padding for new messages
-  useEffect(() => {
-    if (messages.length > 0) {
-      const latestMessage = messages[messages.length - 1];
-      const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
-      
-      // If it's a very recent user message, add padding
-      if (messageAge < 1000 && !latestMessage.is_bot) {
-        setShowNewMessagePadding(true);
-      }
-    }
-  }, [messages]);
-
-  // Remove padding when bot starts responding or after delay
-  useEffect(() => {
-    if (isLoading || streamingMessages.size > 0) {
-      // Remove padding when bot starts thinking or responding
-      setShowNewMessagePadding(false);
-    }
-  }, [isLoading, streamingMessages.size]);
-
-  // Auto-remove padding after 3 seconds if no bot response
-  useEffect(() => {
-    if (showNewMessagePadding) {
-      const timeoutId = setTimeout(() => {
-        setShowNewMessagePadding(false);
-      }, 3000);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [showNewMessagePadding]);
+  }, [isLoading]);
 
   // Handle streaming for new bot messages
   useEffect(() => {
@@ -163,19 +108,15 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim() || !user?.id || isLoading || !chatId) return;
 
-    const currentMessage = messageText;
-    setCurrentUserMessage(currentMessage);
-    // Add padding immediately when user sends message
-    setShowNewMessagePadding(true);
-    setShouldAutoScroll(true); // Ensure we scroll to new messages
     setIsLoading(true);
+    scrollToBottom(); // Scroll immediately when user sends message
 
     try {
       // Send user message
       const userMessageResult = await sendMessage({
         variables: {
           chatId,
-          content: currentMessage,
+          content: messageText,
           userId: user.id,
         },
       });
@@ -184,7 +125,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
       const botResult = await triggerChatbot({
         variables: {
           chat_id: chatId,
-          message: currentMessage,
+          message: messageText,
         },
       });
     } catch (err) {
@@ -197,7 +138,6 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
       }
     } finally {
       setIsLoading(false);
-      setCurrentUserMessage('');
     }
   };
 
@@ -208,8 +148,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
             {/* Messages Container */}
             <div 
               ref={messagesContainerRef}
-              onScroll={handleScroll}
-              className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out pb-82 ${
+              className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth ${
               messages.length > 0 && !isLoading && streamingMessages.size === 0 ? 'pb-96' : 'pb-40'
             }`}>
               <div className="max-w-4xl mx-auto space-y-1 pb-20">
@@ -224,7 +163,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
               </div>
             </div>
 
-            {/* Fixed Typing Indicator - At the bottom */}
+            {/* Typing Indicator */}
             {isLoading && (
               <div className={`${
                 isCollapsed ? 'left-0' : 'left-80'
@@ -235,7 +174,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
               </div>
             )}
 
-            {/* Chat Input → fixed at bottom when there are messages */}
+            {/* Chat Input */}
             <ChatInput 
               onSendMessage={handleSendMessage} 
               isLoading={isLoading} 
@@ -260,7 +199,6 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         )}
       </div>
     );
-
 };
 
 export default MessageView;
