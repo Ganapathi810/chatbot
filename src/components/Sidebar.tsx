@@ -129,6 +129,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const getChatDisplayTitle = (chat: Chat) => {
+    if (chat.messages.length > 0) {
+      return chat.messages[0].content;
+    }
+    return chat.title;
+  };
+
   return (
     <div className={`bg-gray-900/95 backdrop-blur-sm border-r border-gray-700/50 flex flex-col transition-all duration-300 ease-in-out h-full ${
       isCollapsed ? 'w-16' : 'w-80 lg:w-80'
@@ -218,11 +225,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Chat List */}
-      <div className={`px-4 py-2 border-b border-gray-700/50 ${isCollapsed ? 'hidden' : ''}`}>
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
-          Chats
-        </h2>
-      </div>
+      {!isCollapsed && (
+        <div className="px-4 py-2 border-b border-gray-700/50">
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+            Chats
+          </h2>
+        </div>
+      )}
 
       <div className={`flex-1 overflow-y-auto px-2 ${isCollapsed ? 'hidden' : ''}`}>
         {loading ? (
@@ -260,16 +269,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <MessageCircle className="w-5 h-5 flex-shrink-0" />
                     {!isCollapsed && (
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate pr-12">
-                          {chat.messages.length > 0 
-                            ? truncateTitle(chat.messages[0].content, 35)
-                            : truncateTitle(chat.title, 35)
-                          }
-                        </h3>
-                        <div className="absolute bottom-1 right-3">
-                          <span className="text-xs text-gray-500">
-                            {formatChatTime(chat.updated_at)}
-                          </span>
+                        <div className="flex-1 min-w-0 flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium truncate">
+                              {chat.messages.length > 0 
+                                ? truncateTitle(chat.messages[0].content, 35)
+                                : truncateTitle(chat.title, 35)
+                              }
+                            </h3>
+                          </div>
+                          <div className="flex-shrink-0 ml-2">
+                            <span className="text-xs text-gray-500">
+                              {formatChatTime(chat.updated_at)}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     )}
