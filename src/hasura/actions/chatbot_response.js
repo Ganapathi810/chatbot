@@ -82,4 +82,4 @@ async function generateBotResponse(message) {
   return randomResponse;
 }
 
-export default handler;
+module.exports = handler;
