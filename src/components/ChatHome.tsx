@@ -165,17 +165,19 @@ const ChatHome: React.FC = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 h-screen">
           {/* Top Bar */}
           <TopBar onToggleSidebar={() => setIsCollapsed(!isCollapsed)} />
 
           {/* Chat Content */}
           {selectedChatId ? (
-            <MessageView 
-              chatId={selectedChatId} 
-              isNewChat={newChatIds.has(selectedChatId)}
-              isCollapsed={isCollapsed}
-            />
+            <div className="flex-1 min-h-0">
+              <MessageView 
+                chatId={selectedChatId} 
+                isNewChat={newChatIds.has(selectedChatId)}
+                isCollapsed={isCollapsed}
+              />
+            </div>
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
