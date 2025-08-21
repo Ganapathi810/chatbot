@@ -78,7 +78,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
 
   return (
     <div className={inputContainerClass}>
-      <div className={`w-full max-w-4xl mx-auto px-2 sm:px-0 ${!hasMessages ? 'animate-fade-in' : ''}`}>
+      <div className={`w-full max-w-4xl mx-auto px-3 sm:px-4 lg:px-0 ${!hasMessages ? 'animate-fade-in' : ''}`}>
         {!hasMessages && (
           <div className="text-center mb-6 sm:mb-8 animate-slide-up px-4">
             <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-4 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
@@ -95,7 +95,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
         
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative group">
-            <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-gray-500/50 focus-within:border-orange-500/50 focus-within:shadow-lg focus-within:shadow-orange-500/20 transition-all duration-300">
+            <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl sm:rounded-full border border-gray-600/50 hover:border-gray-500/50 focus-within:border-orange-500/50 focus-within:shadow-lg focus-within:shadow-orange-500/20 transition-all duration-300">
               <textarea
                 ref={textareaRef}
                 value={message}
@@ -103,14 +103,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
                 onKeyDown={handleKeyDown}
                 placeholder={hasMessages ? "Type your message..." : "Type your message here... (Press Enter to send, Shift+Enter for new line)"}
                 disabled={isLoading}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-12 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-14 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
                 rows={1}
               />
               
               <button
                 type="submit"
                 disabled={!message.trim() || isLoading}
-                className="absolute right-2 sm:right-3 bottom-2 sm:bottom-3 p-2 sm:p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 disabled:hover:scale-100 disabled:hover:shadow-none"
+                className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 p-2.5 sm:p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 disabled:hover:scale-100 disabled:hover:shadow-none flex items-center justify-center"
               >
                 <Send className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>

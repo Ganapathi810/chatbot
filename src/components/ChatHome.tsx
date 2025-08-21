@@ -21,6 +21,30 @@ const ChatHome: React.FC = () => {
   const chats = data?.chats || [];
   const selectedChat = chats.find((chat: any) => chat.id === selectedChatId);
 
+  // Auto-collapse sidebar on mobile when chat is selected
+  const handleSelectChat = (chatId: string) => {
+    setSelectedChatId(chatId);
+    // Auto-close sidebar on mobile screens
+    if (window.innerWidth < 1024) {
+      setIsCollapsed(true);
+    }
+  };
+
+  // Handle window resize to auto-collapse on small screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Check initial screen size
+    handleResize();
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Auto-create and select first chat after login
   useEffect(() => {
     if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
@@ -91,7 +115,7 @@ const ChatHome: React.FC = () => {
         <div className={`${isCollapsed ? 'hidden lg:flex' : 'fixed lg:relative'} inset-y-0 left-0 z-50 lg:z-auto`}>
           <Sidebar
             selectedChatId={selectedChatId}
-            onSelectChat={setSelectedChatId}
+            onSelectChat={handleSelectChat}
             isCollapsed={isCollapsed}
             onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
             onNewChatCreated={(chatId) => setNewChatIds(prev => new Set(prev).add(chatId))}
