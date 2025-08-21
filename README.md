@@ -169,50 +169,13 @@ The application uses **Hasura Actions + n8n workflow** to process AI responses t
 
 ## 🎨 Features in Detail
 
-### Authentication
-- Email/password authentication via Supabase Auth
-- Protected routes with automatic redirection
-- Secure session management
-
-### Real-time Chat
-- Instant message delivery using GraphQL subscriptions
-- AI responses via Hasura Actions
-- Typing indicators and message streaming
-- Auto-scroll behavior like ChatGPT
-
-### User Interface
-- Mobile-first responsive design
-- Dark theme with orange accents
-- Smooth animations and micro-interactions
-- Collapsible sidebar for mobile
 
 ## 🚀 Deployment
 
-### Frontend (Vercel/Netlify)
+### Frontend (Netlify)
 1. Connect your GitHub repository
 2. Set environment variables
 3. Deploy automatically
 
 ### Backend
-Supabase handles all backend infrastructure automatically.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-MIT License - see LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Supabase for the backend platform
-- React team for the frontend framework
-- Tailwind CSS for the styling system
-
----
-
-**Experience the future of AI conversations with ChatMind AI!**
+Supabase handles all backend infrastructure automatically
