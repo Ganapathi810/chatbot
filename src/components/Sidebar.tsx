@@ -188,7 +188,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           
           {isCollapsed && (
             <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/25 animate-fade-in mx-auto relative group flex-shrink-0">
-              <Bot className="w-7 h-7 text-white" />
+              <Bot className="w-5 h-5 text-white" />
             </div>
           )}
           
@@ -287,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   title={isCollapsed ? chat.title : undefined}
                 >
                   <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'}`}>
-                    <MessageCircle className="w-5 h-5 flex-shrink-0" />
+                    <MessageCircle className="w-4 h-4 flex-shrink-0" />
                     {!isCollapsed && (
                       <div className="flex-1 min-w-0">
                         <div className="flex-1 min-w-0 flex items-center justify-between">
