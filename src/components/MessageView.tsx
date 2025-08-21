@@ -24,9 +24,11 @@ interface MessageViewProps {
 const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, isCollapsed = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessages, setStreamingMessages] = useState<Set<string>>(new Set());
-  const [lastMessageCount, setLastMessageCount] = useState(0);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [userScrolled, setUserScrolled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageCountRef = useRef(0);
   const user = useUserData();
 
   // Use query for faster initial load, then subscription for updates
@@ -46,40 +48,82 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
-  // Auto-scroll to bottom function
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'end'
-        });
-      }
-    }, 100);
+  // Check if user is near bottom of scroll
+  const isNearBottom = () => {
+    if (!messagesContainerRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    return scrollHeight - scrollTop - clientHeight < 100;
   };
 
-  // Auto-scroll when new messages arrive
-  useEffect(() => {
-    if (messages.length > lastMessageCount) {
-      scrollToBottom();
-      setLastMessageCount(messages.length);
+  // Scroll to bottom function
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
     }
-  }, [messages.length, lastMessageCount]);
+  };
+
+  // Handle scroll events to detect manual scrolling
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
+    
+    const isAtBottom = isNearBottom();
+    setShouldAutoScroll(isAtBottom);
+    
+    // If user scrolled up, mark as manually scrolled
+    if (!isAtBottom && !userScrolled) {
+      setUserScrolled(true);
+    }
+    
+    // If user scrolled back to bottom, reset manual scroll flag
+    if (isAtBottom && userScrolled) {
+      setUserScrolled(false);
+    }
+  };
+
+  // Auto-scroll when new messages arrive (ChatGPT style)
+  useEffect(() => {
+    const currentMessageCount = messages.length;
+    const hadNewMessage = currentMessageCount > lastMessageCountRef.current;
+    
+    if (hadNewMessage) {
+      // Always scroll if user hasn't manually scrolled up, or if they're near bottom
+      if (shouldAutoScroll || !userScrolled) {
+        setTimeout(scrollToBottom, 50);
+      }
+      lastMessageCountRef.current = currentMessageCount;
+    }
+  }, [messages.length, shouldAutoScroll, userScrolled]);
 
   // Scroll to bottom when chat changes
   useEffect(() => {
     if (chatId) {
-      setLastMessageCount(0);
-      scrollToBottom();
+      lastMessageCountRef.current = 0;
+      setShouldAutoScroll(true);
+      setUserScrolled(false);
+      setTimeout(scrollToBottom, 100);
     }
   }, [chatId]);
 
-  // Scroll to bottom when loading (user sent message)
+  // Always scroll when user sends a message
   useEffect(() => {
     if (isLoading) {
-      scrollToBottom();
+      setShouldAutoScroll(true);
+      setUserScrolled(false);
+      setTimeout(scrollToBottom, 50);
     }
   }, [isLoading]);
+
+  // Add scroll listener
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   // Handle streaming for new bot messages
   useEffect(() => {
@@ -108,8 +152,11 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim() || !user?.id || isLoading || !chatId) return;
 
+    // Force scroll when user sends message
+    setShouldAutoScroll(true);
+    setUserScrolled(false);
+    
     setIsLoading(true);
-    scrollToBottom(); // Scroll immediately when user sends message
 
     try {
       // Send user message
@@ -148,7 +195,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
             {/* Messages Container */}
             <div 
               ref={messagesContainerRef}
-              className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth ${
+              className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 ${
               messages.length > 0 && !isLoading && streamingMessages.size === 0 ? 'pb-96' : 'pb-40'
             }`}>
               <div className="max-w-4xl mx-auto space-y-1 pb-20">
