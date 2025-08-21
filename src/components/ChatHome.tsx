@@ -52,7 +52,7 @@ const ChatHome: React.FC = () => {
         try {
           const result = await createChat({
             variables: {
-              title: `New Chat ${new Date().toLocaleString()}`,
+              title: `New Chat 1`,
               userId: user.id,
             },
           });
@@ -101,6 +101,25 @@ const ChatHome: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isCollapsed]);
+
+  const handleCreateChat = async () => {
+    try {
+      // Calculate the next chat number
+      const chatNumbers = chats
+        .map(chat => {
+          const match = chat.title.match(/New Chat (\d+)/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .filter(num => num > 0);
+      
+      const nextNumber = chatNumbers.length > 0 ? Math.max(...chatNumbers) + 1 : chats.length + 1;
+      
+      const result = await createChat({
+        variables: {
+          title: `New Chat ${nextNumber}`,
+          userId: user?.id,
+        },
+      });
 
   return (
     <div className="h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">

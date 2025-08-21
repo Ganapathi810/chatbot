@@ -74,9 +74,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleCreateChat = async () => {
     try {
+      // Calculate the next chat number
+      const chatNumbers = chats
+        .map(chat => {
+          const match = chat.title.match(/New Chat (\d+)/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .filter(num => num > 0);
+      
+      const nextNumber = chatNumbers.length > 0 ? Math.max(...chatNumbers) + 1 : chats.length + 1;
+      
       const result = await createChat({
         variables: {
-          title: `New Chat ${new Date().toLocaleString()}`,
+          title: `New Chat ${nextNumber}`,
           userId: user?.id,
         },
       });
