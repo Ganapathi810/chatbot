@@ -289,7 +289,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Dropdown Menu */}
         {showUserMenu && (
-          <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-[60] animate-slide-up ${
           <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-[110] animate-slide-up ${
             isCollapsed ? 'left-full ml-2 min-w-[200px]' : 'left-0 right-0'
           }`}>
