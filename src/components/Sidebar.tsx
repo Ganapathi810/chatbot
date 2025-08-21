@@ -140,9 +140,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const getChatDisplayTitle = (chat: Chat) => {
-    if (chat.messages.length > 0) {
-      return chat.messages[0].content;
+    // Find the latest user message (not bot message)
+    const userMessages = chat.messages.filter(msg => !msg.is_bot);
+    if (userMessages.length > 0) {
+      // Sort by created_at and get the latest user message
+      const latestUserMessage = userMessages.sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0];
+      return latestUserMessage.content;
     }
+    
     // Extract number from title if it exists, otherwise use a default
     const match = chat.title.match(/New Chat (\d+)/);
     if (match) {

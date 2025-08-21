@@ -5,6 +5,7 @@ import { SUBSCRIBE_TO_MESSAGES, SEND_MESSAGE, TRIGGER_CHATBOT } from '../graphql
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import ChatInput from './ChatInput';
+import { User } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -23,6 +24,7 @@ interface MessageViewProps {
 const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, isCollapsed = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [currentUserMessage, setCurrentUserMessage] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
@@ -67,6 +69,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     if (!messageText.trim() || !user?.id || isLoading) return;
 
     const currentMessage = messageText;
+    setCurrentUserMessage(currentMessage);
     setIsLoading(true);
 
     try {
@@ -112,6 +115,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
       }
     } finally {
       setIsLoading(false);
+      setCurrentUserMessage('');
     }
   };
 
