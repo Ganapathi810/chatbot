@@ -49,7 +49,8 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !isCreatingInitialChat) {
+    // Only create initial chat if user exists, no chats exist, and we haven't started creating one
+    if (user?.id && chats.length === 0 && !isCreatingInitialChat && data) {
       const createInitialChat = async () => {
         setIsCreatingInitialChat(true);
         try {
@@ -72,7 +73,7 @@ const ChatHome: React.FC = () => {
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, isCreatingInitialChat, createChat]);
+  }, [user?.id, chats.length, isCreatingInitialChat, createChat, data]);
 
   // Select first available chat if none is selected
   useEffect(() => {
