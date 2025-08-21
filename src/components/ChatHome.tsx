@@ -12,11 +12,11 @@ const ChatHome: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasCreatedInitialChat, setHasCreatedInitialChat] = useState(false);
   const [newChatIds, setNewChatIds] = useState<Set<string>>(new Set());
-  const { data } = useQuery(GET_CHATS);
+  const { data } = useQuery(GET_CHATS, {
+    fetchPolicy: 'cache-and-network',
+  });
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
-    fetchPolicy: 'cache-first',
-    notifyOnNetworkStatusChange: false,
   });
   const user = useUserData();
 

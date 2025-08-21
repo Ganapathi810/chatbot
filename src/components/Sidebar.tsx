@@ -45,9 +45,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { data, loading, error } = useQuery(GET_CHATS);
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
-    fetchPolicy: 'cache-first',
-    pollInterval: 30000, // Poll every 30 seconds instead of real-time
-    notifyOnNetworkStatusChange: false,
   });
   const { signOut } = useSignOut();
   const user = useUserData();

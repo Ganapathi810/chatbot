@@ -34,6 +34,8 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     fetchPolicy: 'cache-and-network',
   });
 
+  const messages: Message[] = data?.messages || [];
+
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 

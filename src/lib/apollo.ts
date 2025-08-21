@@ -52,24 +52,4 @@ export const apolloClient = new ApolloClient({
             merge(existing = [], incoming) {
               return incoming;
             },
-          },
-          messages: {
-            merge(existing = [], incoming) {
-              return incoming;
-            },
-          },
-        },
-      },
-    },
-  }),
-  defaultOptions: {
-    watchQuery: {
-      errorPolicy: 'ignore',
-      fetchPolicy: 'cache-first',
-    },
-    query: {
-      errorPolicy: 'ignore',
-      fetchPolicy: 'cache-first',
-    },
-  },
 });
