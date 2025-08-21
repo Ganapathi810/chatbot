@@ -48,14 +48,12 @@ const handler = async (req, res) => {
     }
     
     res.json({
-      response: botResponse,
-      success: true,
+      response: botResponse
     });
   } catch (error) {
     console.error('Chatbot error:', error);
     res.status(500).json({
-      response: "I'm sorry, I'm having trouble responding right now. Please try again.",
-      success: false,
+      response: "I'm sorry, I'm having trouble responding right now. Please try again."
     });
   }
 };
