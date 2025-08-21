@@ -94,7 +94,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
         )}
         
         <form onSubmit={handleSubmit} className="relative">
-          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-full border transition-all duration-500 group ${
+          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-full border transition-all duration-500 group overflow-hidden ${
             isFocused 
               ? 'border-transparent shadow-lg shadow-orange-500/20' 
               : 'border-gray-600/50 hover:border-gray-500/50'

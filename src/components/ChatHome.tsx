@@ -119,7 +119,7 @@ const ChatHome: React.FC = () => {
                 
                 {/* Chat Input Area */}
                 <div className="w-full max-w-3xl mx-auto mb-8 sm:mb-12">
-                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group">
+                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group overflow-hidden">
                     {/* Animated border overlay */}
                     <div className="absolute inset-0 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
                       <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 animate-spin-slow"></div>
