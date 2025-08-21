@@ -72,6 +72,7 @@ const ChatHome: React.FC = () => {
       };
       createInitialChat();
     }
+  }, [user?.id, chats.length, isCreatingInitialChat, createChat]);
 
   // Select first available chat if none is selected
   useEffect(() => {
