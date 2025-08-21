@@ -47,99 +47,61 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
 
 
   const scrollToBottom = () => {
-    // Scroll to bottom to show newest messages
-    const messagesContainer = messagesEndRef.current?.parentElement;
-    if (messagesContainer) {
-      messagesContainer.scrollTo({
-        top: messagesContainer.scrollHeight,
-        behavior: 'smooth'
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
       });
     }
   };
 
   useEffect(() => {
-    // Scroll to bottom immediately when new messages arrive
+    // Auto-scroll when messages change
     if (messages.length > 0) {
-      // Use requestAnimationFrame for smoother scrolling to bottom
-      requestAnimationFrame(() => {
-        scrollToBottom();
-      });
-    }
-  }, [messages.length]);
-
-  // Separate effect for loading state changes
-  useEffect(() => {
-    if (isLoading) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to bottom to show typing indicator
-      }, 50);
+        scrollToBottom();
+      }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [isLoading]);
+  }, [messages.length]);
 
-  // Enhanced scroll effect for when user sends a message - scroll to bottom
-  useEffect(() => {
-    if (currentUserMessage && messages.length > 0) {
-      // Find the latest user message (last in chronological order)
-      const latestMessage = messages[messages.length - 1];
-      if (latestMessage && !latestMessage.is_bot) {
-        // Immediate scroll to bottom for user's own message
-        requestAnimationFrame(() => {
-          const messagesContainer = messagesEndRef.current?.parentElement;
-          if (messagesContainer) {
-            messagesContainer.scrollTo({
-              top: messagesContainer.scrollHeight,
-              behavior: 'smooth'
-            });
-          }
-        });
-      }
-    }
-  }, [messages, currentUserMessage]);
-
-  // Scroll during streaming
-  useEffect(() => {
-    if (streamingMessages.size > 0) {
-      const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to bottom during streaming
-      }, 100);
-    
-    return () => clearTimeout(timeoutId);
-    }
-  }, [streamingMessages]);
-
-  // Handle immediate user message display - scroll to bottom
-  useEffect(() => {
-    // When user sends a message, immediately scroll to bottom to show it
-    if (messages.length > 0) {
-      const latestMessage = messages[messages.length - 1]; // Last message is the latest
-      const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
-      
-      // If it's a very recent message (within 1 second), it's likely just sent
-      if (messageAge < 1000) {
-        // Immediate scroll to bottom without delay
-        const messagesContainer = messagesEndRef.current?.parentElement;
-        if (messagesContainer) {
-          messagesContainer.scrollTo({
-            top: messagesContainer.scrollHeight,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }
-  }, [messages]);
-
-  // Auto-scroll to bottom when typing indicator appears
+  // Auto-scroll when loading (typing indicator)
   useEffect(() => {
     if (isLoading) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to bottom for typing indicator
+        scrollToBottom();
       }, 200);
       
       return () => clearTimeout(timeoutId);
     }
   }, [isLoading]);
+
+  // Force scroll for user messages
+  useEffect(() => {
+    if (messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
+      
+      // If it's a very recent message (within 2 seconds), scroll to it
+      if (messageAge < 2000) {
+        setTimeout(() => {
+          scrollToBottom();
+        }, 50);
+      }
+    }
+  }, [messages]);
+
+  // Scroll during streaming
+  useEffect(() => {
+    if (streamingMessages.size > 0) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [streamingMessages.size]);
 
   // Handle streaming for new bot messages
   useEffect(() => {
