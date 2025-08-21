@@ -29,7 +29,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const user = useUserData();
 
   // Use query for initial load, then subscription for real-time updates
-  const { data: initialData, loading: initialLoading } = useQuery(GET_CHAT_MESSAGES, {
+  const { data: initialData, loading: initialLoading, error } = useQuery(GET_CHAT_MESSAGES, {
     variables: { chatId },
     fetchPolicy: 'cache-first',
     notifyOnNetworkStatusChange: false,
