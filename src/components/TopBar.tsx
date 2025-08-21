@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Sparkles } from 'lucide-react';
+import { Bot, Sparkles, Menu } from 'lucide-react';
 
-const TopBar: React.FC = () => {
+interface TopBarProps {
+  onToggleSidebar?: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
@@ -30,7 +34,16 @@ const TopBar: React.FC = () => {
   return (
     <div className="bg-gray-900/95 backdrop-blur-sm border-b border-gray-700/50 px-4 sm:px-6 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          {/* Mobile Sidebar Toggle */}
+          <button
+            onClick={onToggleSidebar}
+            className="lg:hidden p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all duration-200 hover:scale-105"
+            title="Toggle sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          
           <div className="flex items-center space-x-3 animate-fade-in">
             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25">
               <Bot className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
