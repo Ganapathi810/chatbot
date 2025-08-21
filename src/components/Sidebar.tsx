@@ -103,6 +103,32 @@ const Sidebar: React.FC<SidebarProps> = ({
     return title.length > maxLength ? `${title.substring(0, maxLength)}...` : title;
   };
 
+  const formatChatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+    const chatDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    if (chatDate.getTime() === today.getTime()) {
+      // Today - show time with AM/PM
+      return date.toLocaleTimeString([], { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    } else if (chatDate.getTime() === yesterday.getTime()) {
+      // Yesterday
+      return 'Yesterday';
+    } else {
+      // Other dates - show date
+      return date.toLocaleDateString([], { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+  };
+
   return (
     <div className={`bg-gray-900/95 backdrop-blur-sm border-r border-gray-700/50 flex flex-col transition-all duration-300 ease-in-out h-full ${
       isCollapsed ? 'w-16' : 'w-80 lg:w-80'
@@ -192,6 +218,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Chat List */}
+      <div className={`px-4 py-2 border-b border-gray-700/50 ${isCollapsed ? 'hidden' : ''}`}>
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+          Chats
+        </h2>
+      </div>
+
       <div className={`flex-1 overflow-y-auto px-2 ${isCollapsed ? 'hidden' : ''}`}>
         {loading ? (
           <div className="flex items-center justify-center py-8">
@@ -228,14 +260,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <MessageCircle className="w-5 h-5 flex-shrink-0" />
                     {!isCollapsed && (
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate">
-                          {truncateTitle(chat.title)}
+                        <h3 className="font-medium truncate pr-12">
+                          {chat.messages.length > 0 
+                            ? truncateTitle(chat.messages[0].content, 35)
+                            : truncateTitle(chat.title, 35)
+                          }
                         </h3>
-                        {chat.messages.length > 0 && (
-                          <p className="text-xs text-gray-500 truncate mt-1">
-                            {truncateTitle(chat.messages[0].content, 30)}
-                          </p>
-                        )}
+                        <div className="absolute bottom-1 right-3">
+                          <span className="text-xs text-gray-500">
+                            {formatChatTime(chat.updated_at)}
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
