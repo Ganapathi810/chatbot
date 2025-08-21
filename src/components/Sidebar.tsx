@@ -187,8 +187,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
           
           {isCollapsed && (
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25 animate-fade-in mx-auto relative group">
-              <Bot className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/25 animate-fade-in mx-auto relative group">
+              <Bot className="w-7 h-7 text-white" />
             </div>
           )}
           
