@@ -137,7 +137,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-32 h-0 scroll-smooth">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-40 h-0 scroll-smooth">
               <div className="max-w-4xl mx-auto space-y-1">
                 {messages.map((message) => (
                   <MessageBubble
@@ -147,10 +147,20 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                   />
                 ))}
                 
-                {isLoading && <TypingIndicator />}
                 <div ref={messagesEndRef} className="h-4" />
               </div>
             </div>
+
+            {/* Fixed Typing Indicator - Always above input */}
+            {isLoading && (
+              <div className={`${
+                isCollapsed ? 'left-0' : 'left-80'
+              } right-0 fixed bottom-24 px-4 sm:px-6 pointer-events-none z-10`}>
+                <div className="max-w-4xl mx-auto">
+                  <TypingIndicator />
+                </div>
+              </div>
+            )}
 
             {/* Chat Input → fixed at bottom when there are messages */}
             <ChatInput 

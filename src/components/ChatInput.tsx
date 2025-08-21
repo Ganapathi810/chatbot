@@ -76,7 +76,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
   const inputContainerClass = hasMessages 
     ? `fixed bottom-0 right-0 p-3 sm:p-4 ${
         isCollapsed ? 'left-0' : 'left-80'
-      }`
+      } bg-gradient-to-t from-gray-900 via-gray-900/95 to-transparent pt-6`
     : "flex items-center justify-center min-h-[60vh]";
 
   return (
