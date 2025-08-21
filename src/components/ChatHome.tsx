@@ -165,6 +165,23 @@ const ChatHome: React.FC = () => {
                   </button>
                 </div>
                 
+                {/* Chat Input */}
+                <div className="mt-8 sm:mt-12 max-w-2xl mx-auto">
+                  <div className="relative">
+                    <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-gray-500/50 focus-within:border-orange-500/50 focus-within:shadow-lg focus-within:shadow-orange-500/20 transition-all duration-300">
+                      <input
+                        type="text"
+                        placeholder="Ask anything"
+                        className="w-full px-6 py-4 pr-16 bg-transparent text-white placeholder-gray-400 focus:outline-none rounded-full"
+                      />
+                      
+                      <button className="absolute right-3 top-1/2 transform -translate-y-1/2 p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25">
+                        <Send className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* Keyboard Shortcuts */}
                 <div className="mt-8 sm:mt-12 text-sm text-gray-500">
                   <p className="hidden sm:block">

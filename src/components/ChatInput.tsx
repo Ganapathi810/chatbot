@@ -95,27 +95,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
         
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative group">
-            {/* Animated border - only visible on focus */}
-            <div className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none overflow-hidden ${
-              isFocused ? 'opacity-100' : 'opacity-0'
-            }`}>
-              <div className="absolute inset-0 rounded-full animate-border-rotate">
-                <div className="w-full h-full rounded-full border-2 border-transparent bg-gradient-conic from-orange-500 via-blue-500 via-purple-500 to-orange-500 bg-clip-border"></div>
-              </div>
-            </div>
-            
-            <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-full border transition-all duration-500 ${
-            isFocused 
-              ? 'border-transparent shadow-lg shadow-orange-500/20 z-10' 
-              : 'border-gray-600/50 hover:border-gray-500/50'
-            }`}>
+            <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-gray-500/50 focus-within:border-orange-500/50 focus-within:shadow-lg focus-within:shadow-orange-500/20 transition-all duration-300">
               <textarea
                 ref={textareaRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
                 placeholder={hasMessages ? "Type your message..." : "Type your message here... (Press Enter to send, Shift+Enter for new line)"}
                 disabled={isLoading}
                 className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-12 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
