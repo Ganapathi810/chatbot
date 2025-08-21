@@ -118,12 +118,12 @@ const ChatHome: React.FC = () => {
                 </h1>
                 
                 {/* Chat Input Area */}
-                <div className="w-full max-w-3xl mx-auto mb-8 sm:mb-12">
-                  <div className="relative group">
                     {/* Animated border - only visible on focus */}
-                    <div className="absolute inset-0 rounded-full opacity-0 group-focus-within:opacity-100 group-focus-within:animate-border-spin transition-opacity duration-300 pointer-events-none">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 p-0.5">
-                        <div className="w-full h-full rounded-full bg-gray-800/50 backdrop-blur-sm"></div>
+                    <div className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none overflow-hidden ${
+                      isFocused ? 'opacity-100' : 'opacity-0'
+                    }`}>
+                      <div className="absolute inset-0 rounded-full animate-border-rotate">
+                        <div className="w-full h-full rounded-full border-2 border-transparent bg-gradient-conic from-orange-500 via-blue-500 via-purple-500 to-orange-500 bg-clip-border"></div>
                       </div>
                     </div>
                     

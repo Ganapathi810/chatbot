@@ -99,11 +99,18 @@
 @keyframes border-spin {
   0% {
     transform: rotate(0deg);
-    opacity: 1;
   }
   100% {
     transform: rotate(360deg);
-    opacity: 0;
+  }
+}
+
+@keyframes border-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -117,6 +124,14 @@
 
 .animate-border-spin {
   animation: border-spin 1s linear forwards;
+}
+
+.animate-border-rotate {
+  animation: border-rotate 2s linear infinite;
+}
+
+.bg-gradient-conic {
+  background: conic-gradient(from 0deg, var(--tw-gradient-stops));
 }
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
