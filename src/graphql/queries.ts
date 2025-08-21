@@ -7,10 +7,11 @@ export const GET_CHATS = gql`
       title
       created_at
       updated_at
-      messages(order_by: { created_at: desc }, limit: 1) {
+      messages(order_by: { created_at: desc }, limit: 5) {
         content
         created_at
         is_bot
+        user_id
       }
     }
   }

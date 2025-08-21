@@ -150,7 +150,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       const latestUserMessage = userMessages.sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )[0];
-      return latestUserMessage.content;
+      // Truncate long messages for display
+      const content = latestUserMessage.content;
+      return content.length > 50 ? `${content.substring(0, 50)}...` : content;
     }
     
     // Extract number from title if it exists, otherwise use a default
