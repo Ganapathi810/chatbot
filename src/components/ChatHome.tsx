@@ -11,6 +11,7 @@ const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasCreatedInitialChat, setHasCreatedInitialChat] = useState(false);
+  const [isCreatingInitialChat, setIsCreatingInitialChat] = useState(false);
   const [newChatIds, setNewChatIds] = useState<Set<string>>(new Set());
   const { data } = useQuery(GET_CHATS, {
     fetchPolicy: 'cache-and-network',
@@ -49,8 +50,9 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
+    if (user?.id && chats.length === 0 && !hasCreatedInitialChat && !isCreatingInitialChat) {
       const createInitialChat = async () => {
+        setIsCreatingInitialChat(true);
         try {
           const result = await createChat({
             variables: {
@@ -66,12 +68,14 @@ const ChatHome: React.FC = () => {
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
+        } finally {
+          setIsCreatingInitialChat(false);
           setHasCreatedInitialChat(true);
         }
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
+  }, [user?.id, chats.length, hasCreatedInitialChat, isCreatingInitialChat, createChat]);
 
   // Select first available chat if none is selected
   useEffect(() => {
