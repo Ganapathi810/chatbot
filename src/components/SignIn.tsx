@@ -40,12 +40,24 @@ const SignIn: React.FC = () => {
       const result = await signInEmailPassword(email, password);
       if (result.error) {
         // Handle specific error cases
-        if (result.error.message.includes('email-not-verified')) {
-          setErrors({ general: 'Please verify your email address before signing in. Check your inbox for the verification link.' });
-        } else if (result.error.message.includes('invalid-email-password')) {
+        if (result.error.message.includes('email-not-verified') || 
+            result.error.message.includes('unverified-user') ||
+            result.error.message.includes('email-confirmation-required')) {
+          setErrors({ general: 'Your email address is not verified yet. Please check your inbox and click the verification link before signing in.' });
+        } else if (result.error.message.includes('invalid-email-password') ||
+                   result.error.message.includes('invalid-credentials')) {
           setErrors({ general: 'Invalid email or password. Please check your credentials and try again.' });
+        } else if (result.error.message.includes('network') || 
+                   result.error.message.includes('fetch')) {
+          setErrors({ general: 'Network error. Please check your internet connection and try again.' });
         } else {
-          setErrors({ general: result.error.message });
+          // For unverified users, the error might come in different formats
+          if (result.error.message.toLowerCase().includes('verify') || 
+              result.error.message.toLowerCase().includes('confirm')) {
+            setErrors({ general: 'Your email address is not verified yet. Please check your inbox and click the verification link before signing in.' });
+          } else {
+            setErrors({ general: result.error.message });
+          }
         }
       }
     } catch (err) {
