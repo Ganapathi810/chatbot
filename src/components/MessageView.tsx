@@ -26,7 +26,9 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [streamingMessages, setStreamingMessages] = useState<Set<string>>(new Set());
   const [currentUserMessage, setCurrentUserMessage] = useState<string>('');
   const [showNewMessagePadding, setShowNewMessagePadding] = useState(false);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
   // Use query for faster initial load, then subscription for updates
@@ -46,6 +48,61 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
+  // Auto-scroll to bottom function
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior,
+        block: 'end',
+        inline: 'nearest'
+      });
+    }
+  };
+
+  // Check if user is near bottom of messages
+  const isNearBottom = () => {
+    if (!messagesContainerRef.current) return true;
+    
+    const container = messagesContainerRef.current;
+    const threshold = 100; // pixels from bottom
+    
+    return (
+      container.scrollTop + container.clientHeight >= 
+      container.scrollHeight - threshold
+    );
+  };
+
+  // Handle scroll events to determine if we should auto-scroll
+  const handleScroll = () => {
+    setShouldAutoScroll(isNearBottom());
+  };
+
+  // Auto-scroll when new messages arrive (only if user is near bottom)
+  useEffect(() => {
+    if (messages.length > 0 && shouldAutoScroll) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [messages.length, shouldAutoScroll]);
+
+  // Always scroll to bottom when chat changes
+  useEffect(() => {
+    if (chatId) {
+      setShouldAutoScroll(true);
+      setTimeout(() => {
+        scrollToBottom('auto');
+      }, 200);
+    }
+  }, [chatId]);
+
+  // Scroll to bottom when starting to type (user sent message)
+  useEffect(() => {
+    if (isLoading && shouldAutoScroll) {
+      scrollToBottom();
+    }
+  }, [isLoading, shouldAutoScroll]);
 
   // Handle padding for new messages
   useEffect(() => {
@@ -110,6 +167,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     setCurrentUserMessage(currentMessage);
     // Add padding immediately when user sends message
     setShowNewMessagePadding(true);
+    setShouldAutoScroll(true); // Ensure we scroll to new messages
     setIsLoading(true);
 
     try {
@@ -148,7 +206,10 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out pb-82 ${
+            <div 
+              ref={messagesContainerRef}
+              onScroll={handleScroll}
+              className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out pb-82 ${
               messages.length > 0 && !isLoading && streamingMessages.size === 0 ? 'pb-96' : 'pb-40'
             }`}>
               <div className="max-w-4xl mx-auto space-y-1 pb-20">
@@ -159,7 +220,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                     isStreaming={streamingMessages.has(message.id)}
                   />
                 ))}
-                <div ref={messagesEndRef} className="h-4" />
+                <div ref={messagesEndRef} className="h-1" />
               </div>
             </div>
 
