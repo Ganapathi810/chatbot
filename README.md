@@ -1,6 +1,6 @@
 # ChatMind AI
 
-A modern, real-time AI chat application built with React, TypeScript, and Supabase. Experience intelligent conversations with a beautiful, responsive interface.
+A modern, real-time AI chat application built with React, TypeScript, and hasura. Experience intelligent conversations with a beautiful, responsive interface.
 
 ![ChatMind AI](https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop)
 
@@ -47,7 +47,7 @@ React Frontend ↔ Apollo Client ↔ Supabase GraphQL ↔ PostgreSQL Database
 - **Vite** - Fast build tool and development server
 
 ### Backend
-- **Supabase** - Backend-as-a-Service platform
+- **hasura** - Auto-building GraphQL API
 - **PostgreSQL** - Relational database with Row Level Security
 - **GraphQL** - API query language with real-time subscriptions
 - **Hasura Actions** - Custom business logic for AI integration
@@ -56,10 +56,6 @@ React Frontend ↔ Apollo Client ↔ Supabase GraphQL ↔ PostgreSQL Database
 - **WebSocket** - Real-time bidirectional communication
 
 ## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- Supabase account
 
 ### Installation
 
@@ -74,10 +70,10 @@ cd chatmind-ai
 npm install
 ```
 
-3. **Set up Supabase**
-   - Create a new project at [Supabase Console](https://supabase.com/dashboard)
-   - Run the SQL migration from `supabase/migrations/` in your Supabase SQL editor
-   - Get your project URL and anon key
+3. **Set up hasura**
+   - Create a new project at hasura console
+   - connect postgres database from supabase
+   - configure proper permissions for chats and messages tables
 
 4. **Configure environment variables**
 Create a `.env` file:
@@ -167,9 +163,6 @@ The application uses **Hasura Actions + n8n workflow** to process AI responses t
 - Row Level Security (RLS) ensures users only access their own data
 - Authentication required for all operations
 
-## 🎨 Features in Detail
-
-
 ## 🚀 Deployment
 
 ### Frontend (Netlify)
@@ -178,4 +171,4 @@ The application uses **Hasura Actions + n8n workflow** to process AI responses t
 3. Deploy automatically
 
 ### Backend
-Supabase handles all backend infrastructure automatically
+hasura handles all backend infrastructure automatically
