@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bot, Sparkles, Menu } from 'lucide-react';
+import { Sparkles, Menu } from 'lucide-react';
 
 interface TopBarProps {
   onToggleSidebar?: () => void;
@@ -43,6 +43,17 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
           >
             <Menu className="w-5 h-5" />
           </button>
+          
+          {/* Brand Title */}
+          <div className="flex items-center">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              {displayedText}
+              {isTyping && (
+                <span className="inline-block w-0.5 h-5 bg-orange-500 ml-1 animate-pulse"></span>
+              )}
+            </h1>
+            <Sparkles className="w-5 h-5 text-orange-400 ml-2 animate-twinkle" />
+          </div>
         </div>
         
       </div>
