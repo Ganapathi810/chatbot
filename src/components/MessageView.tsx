@@ -25,6 +25,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessages, setStreamingMessages] = useState<Set<string>>(new Set());
   const [currentUserMessage, setCurrentUserMessage] = useState<string>('');
+  const [showNewMessagePadding, setShowNewMessagePadding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
@@ -46,62 +47,37 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
 
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'end'
-      });
-    }
-  };
-
-  useEffect(() => {
-    // Auto-scroll when messages change
-    if (messages.length > 0) {
-      const timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 100);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [messages.length]);
-
-  // Auto-scroll when loading (typing indicator)
-  useEffect(() => {
-    if (isLoading) {
-      const timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 200);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isLoading]);
-
-  // Force scroll for user messages
+  // Handle padding for new messages
   useEffect(() => {
     if (messages.length > 0) {
       const latestMessage = messages[messages.length - 1];
       const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
       
-      // If it's a very recent message (within 2 seconds), scroll to it
-      if (messageAge < 2000) {
-        setTimeout(() => {
-          scrollToBottom();
-        }, 50);
+      // If it's a very recent user message, add padding
+      if (messageAge < 1000 && !latestMessage.is_bot) {
+        setShowNewMessagePadding(true);
       }
     }
   }, [messages]);
 
-  // Scroll during streaming
+  // Remove padding when bot starts responding or after delay
   useEffect(() => {
-    if (streamingMessages.size > 0) {
+    if (isLoading || streamingMessages.size > 0) {
+      // Remove padding when bot starts thinking or responding
+      setShowNewMessagePadding(false);
+    }
+  }, [isLoading, streamingMessages.size]);
+
+  // Auto-remove padding after 3 seconds if no bot response
+  useEffect(() => {
+    if (showNewMessagePadding) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom();
-      }, 100);
+        setShowNewMessagePadding(false);
+      }, 3000);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [streamingMessages.size]);
+  }, [showNewMessagePadding]);
 
   // Handle streaming for new bot messages
   useEffect(() => {
@@ -132,6 +108,8 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
 
     const currentMessage = messageText;
     setCurrentUserMessage(currentMessage);
+    // Add padding immediately when user sends message
+    setShowNewMessagePadding(true);
     setIsLoading(true);
 
     try {
@@ -179,7 +157,9 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-40 h-0 scroll-smooth">
+            <div className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out ${
+              showNewMessagePadding ? 'pb-96' : 'pb-40'
+            }`}>
               <div className="max-w-4xl mx-auto space-y-1">
                 {messages.map((message) => (
                   <MessageBubble
@@ -188,7 +168,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                     isStreaming={streamingMessages.has(message.id)}
                   />
                 ))}
-                <div ref={messagesEndRef} className="h-8 sm:h-12" />
+                <div ref={messagesEndRef} className="h-4" />
               </div>
             </div>
 
