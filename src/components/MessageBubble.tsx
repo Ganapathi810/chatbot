@@ -66,8 +66,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
     return 'You';
   };
 
+  // Determine if this is a new message for enhanced animation
+  const messageAge = Date.now() - new Date(message.created_at).getTime();
+  const isNewMessage = messageAge < 2000; // Message is less than 2 seconds old
+
   return (
-    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 sm:mb-8 animate-fade-in`}>
+    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 sm:mb-8 ${
+      isNewMessage ? 'animate-slide-up' : 'animate-fade-in'
+    }`}>
       <div className={`max-w-[85%] sm:max-w-[80%] ${!message.is_bot ? 'ml-8 sm:ml-12' : 'mr-8 sm:mr-12'}`}>
         <div className={`flex items-start ${!message.is_bot ? 'flex-row-reverse' : ''}`}>
           {/* Avatar */}

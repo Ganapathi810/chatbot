@@ -55,24 +55,84 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   };
 
   useEffect(() => {
-    // Scroll to bottom when new messages arrive or when loading state changes
-    const timeoutId = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    
-    return () => clearTimeout(timeoutId);
-  }, [messages.length, isLoading]);
+    // Scroll to bottom immediately when new messages arrive
+    if (messages.length > 0) {
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        scrollToBottom();
+      });
+    }
+  }, [messages.length]);
 
-  // Scroll to bottom when a new message is being typed (streaming)
+  // Separate effect for loading state changes
   useEffect(() => {
-    if (streamingMessages.size > 0) {
+    if (isLoading) {
       const timeoutId = setTimeout(() => {
         scrollToBottom();
       }, 50);
       
       return () => clearTimeout(timeoutId);
     }
+  }, [isLoading]);
+
+  // Enhanced scroll effect for when user sends a message
+  useEffect(() => {
+    if (currentUserMessage && messages.length > 0) {
+      // Find the latest user message
+      const latestMessage = messages[messages.length - 1];
+      if (latestMessage && !latestMessage.is_bot) {
+        // Immediate scroll for user's own message
+        requestAnimationFrame(() => {
+          messagesEndRef.current?.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest'
+          });
+        });
+      }
+    }
+  }, [messages, currentUserMessage]);
+
+  // Scroll during streaming
+  useEffect(() => {
+    if (streamingMessages.size > 0) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    
+    return () => clearTimeout(timeoutId);
+    }
   }, [streamingMessages]);
+
+  // Handle immediate user message display
+  useEffect(() => {
+    // When user sends a message, immediately scroll to show it
+    if (messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
+      
+      // If it's a very recent message (within 1 second), it's likely just sent
+      if (messageAge < 1000) {
+        // Immediate scroll without delay
+        messagesEndRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest'
+        });
+      }
+    }
+  }, [messages]);
+
+  // Auto-scroll when typing indicator appears
+  useEffect(() => {
+    if (isLoading) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 200);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isLoading]);
 
   // Handle streaming for new bot messages
   useEffect(() => {
