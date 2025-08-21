@@ -199,6 +199,12 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
               messages.length > 0 && !isLoading && streamingMessages.size === 0 ? 'pb-96' : 'pb-40'
             }`}>
               <div className="max-w-4xl mx-auto space-y-1 pb-20">
+                {/* Show typing indicator at top when no messages exist */}
+                {messages.length === 0 && isLoading && (
+                  <div className="pt-8">
+                    <TypingIndicator />
+                  </div>
+                )}
                 {messages.map((message) => (
                   <MessageBubble
                     key={message.id}
@@ -210,8 +216,8 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
               </div>
             </div>
 
-            {/* Typing Indicator */}
-            {isLoading && (
+            {/* Typing Indicator - only show when messages exist */}
+            {isLoading && messages.length > 0 && (
               <div className={`${
                 isCollapsed ? 'left-0' : 'left-80'
               } right-0 fixed bottom-24 px-4 sm:px-6 pointer-events-none z-10`}>
