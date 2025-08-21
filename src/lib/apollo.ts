@@ -4,12 +4,15 @@ import { WebSocketLink } from '@apollo/client/link/ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { nhost } from './nhost';
 
+const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN || 'demo';
+const region = import.meta.env.VITE_NHOST_REGION || 'eu-central-1';
+
 const httpLink = createHttpLink({
-  uri: `https://${import.meta.env.VITE_NHOST_SUBDOMAIN}.hasura.${import.meta.env.VITE_NHOST_REGION}.nhost.run/v1/graphql`,
+  uri: `https://${subdomain}.hasura.${region}.nhost.run/v1/graphql`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: `wss://${import.meta.env.VITE_NHOST_SUBDOMAIN}.hasura.${import.meta.env.VITE_NHOST_REGION}.nhost.run/v1/graphql`,
+  uri: `wss://${subdomain}.hasura.${region}.nhost.run/v1/graphql`,
   options: {
     reconnect: true,
     connectionParams: () => ({

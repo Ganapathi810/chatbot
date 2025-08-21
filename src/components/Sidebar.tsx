@@ -42,7 +42,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = React.useRef<HTMLDivElement>(null);
-  const { data, loading, error } = useQuery(GET_CHATS);
+  const { data, loading, error } = useQuery(GET_CHATS, {
+    fetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+  });
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
   });

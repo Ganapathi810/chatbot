@@ -49,7 +49,7 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !hasCreatedInitialChat && !selectedChatId) {
+    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
       const createInitialChat = async () => {
         try {
           const result = await createChat({
@@ -66,12 +66,12 @@ const ChatHome: React.FC = () => {
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
-          setHasCreatedInitialChat(true); // Prevent infinite retries
+          setHasCreatedInitialChat(true);
         }
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, hasCreatedInitialChat, selectedChatId, createChat]);
+  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
 
   // Select first available chat if none is selected
   useEffect(() => {

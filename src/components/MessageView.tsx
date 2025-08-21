@@ -28,13 +28,19 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
-  // Use subscription only for real-time updates - much faster
-  const { data, loading, error } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
+  // Use query for faster initial load, then subscription for updates
+  const { data: queryData, loading: queryLoading } = useQuery(GET_CHAT_MESSAGES, {
     variables: { chatId },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'cache-first',
+    skip: !chatId,
   });
 
-  const messages: Message[] = data?.messages || [];
+  const { data: subscriptionData } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
+    variables: { chatId },
+    skip: !chatId || queryLoading,
+  });
+
+  const messages: Message[] = subscriptionData?.messages || queryData?.messages || [];
 
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
@@ -69,7 +75,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   }, [streamingMessageId]);
 
   const handleSendMessage = async (messageText: string) => {
-    if (!messageText.trim() || !user?.id || isLoading) return;
+    if (!messageText.trim() || !user?.id || isLoading || !chatId) return;
 
     const currentMessage = messageText;
     setCurrentUserMessage(currentMessage);
@@ -97,7 +103,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
       if (botResult.data?.chatbot_response?.response) {
         // Find the latest bot message and set it for streaming
         setTimeout(() => {
-          const latestMessages = data?.messages || [];
+          const latestMessages = subscriptionData?.messages || queryData?.messages || [];
           const latestBotMessage = latestMessages
             .filter((msg: Message) => msg.is_bot)
             .sort((a: Message, b: Message) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
@@ -122,7 +128,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     }
   };
 
-  if (loading) {
+  if (queryLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
@@ -130,14 +136,6 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     );
   }
 
-  if (error) {
-    console.log(error)
-    return (
-      <div className="flex-1 flex items-center justify-center h-full">
-        <p className="text-red-600">Error loading messages</p>
-      </div>
-    );
-  }
 
     return (
       <div className="flex-1 flex flex-col relative h-full">
