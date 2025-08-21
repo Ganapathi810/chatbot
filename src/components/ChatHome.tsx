@@ -110,48 +110,91 @@ const ChatHome: React.FC = () => {
               isNewChat={newChatIds.has(selectedChatId)}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-center relative">
-              <div className="text-center max-w-2xl mx-auto px-8 animate-fade-in">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mb-8 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
-                  <MessageCircle className="w-10 h-10 text-white" />
-                </div>
+            <div className="flex-1 flex flex-col items-center justify-center relative px-4 sm:px-6">
+              <div className="text-center max-w-4xl mx-auto animate-fade-in">
+                {/* Main Welcome Message */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-8 sm:mb-12">
+                  Ready when you are.
+                </h1>
                 
-                <div className="flex items-center justify-center mb-4">
-                  <h2 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Welcome to ChatMind AI
-                  </h2>
-                  <Sparkles className="w-8 h-8 text-orange-400 ml-3 animate-twinkle" />
-                </div>
-                
-                <p className="text-xl text-orange-400 font-medium mb-6">
-                  Your Intelligent Conversation Partner
-                </p>
-                
-                <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                  Start a new conversation or select an existing chat from the sidebar to continue where you left off
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
-                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-white mb-2">🚀 AI-Powered</h3>
-                    <p className="text-sm text-gray-400">Advanced AI responses with context awareness</p>
-                  </div>
-                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-white mb-2">⚡ Real-time</h3>
-                    <p className="text-sm text-gray-400">Instant messaging with live updates</p>
-                  </div>
-                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-white mb-2">💾 Persistent</h3>
-                    <p className="text-sm text-gray-400">All conversations saved automatically</p>
-                  </div>
-                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105">
-                    <h3 className="font-semibold text-white mb-2">🎨 Beautiful</h3>
-                    <p className="text-sm text-gray-400">Modern, responsive design</p>
+                {/* Chat Input Area */}
+                <div className="w-full max-w-3xl mx-auto mb-8 sm:mb-12">
+                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300">
+                    <div className="flex items-center px-4 sm:px-6 py-4 sm:py-5">
+                      <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
+                        <Sparkles className="w-4 h-4 text-white" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Ask anything"
+                        className="flex-1 bg-transparent text-white placeholder-gray-400 text-lg focus:outline-none"
+                        readOnly
+                      />
+                      <div className="flex items-center space-x-2 ml-4">
+                        <button className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors duration-200">
+                          <MessageCircle className="w-5 h-5 text-gray-400" />
+                        </button>
+                        <button className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors duration-200">
+                          <Sparkles className="w-5 h-5 text-gray-400" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="mt-8 text-sm text-gray-500">
-                  <p>Keyboard shortcuts: <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+N</kbd> New Chat • <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+B</kbd> Toggle Sidebar</p>
+                {/* Feature Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105 group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <MessageCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2 text-lg">Smart Conversations</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Engage in intelligent discussions with context-aware AI responses</p>
+                  </div>
+                  
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105 group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2 text-lg">Real-time Responses</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Get instant AI-powered responses with streaming text effects</p>
+                  </div>
+                  
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105 group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <MessageCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2 text-lg">Chat History</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">All your conversations are automatically saved and organized</p>
+                  </div>
+                  
+                  <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105 group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2 text-lg">Beautiful Design</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">Modern, responsive interface that works on all devices</p>
+                  </div>
+                </div>
+                
+                {/* Quick Actions */}
+                <div className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-3 sm:gap-4">
+                  <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white rounded-xl border border-gray-600/50 hover:border-orange-500/30 transition-all duration-200 hover:scale-105 text-sm sm:text-base">
+                    Explain quantum computing
+                  </button>
+                  <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white rounded-xl border border-gray-600/50 hover:border-orange-500/30 transition-all duration-200 hover:scale-105 text-sm sm:text-base">
+                    Write a creative story
+                  </button>
+                  <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white rounded-xl border border-gray-600/50 hover:border-orange-500/30 transition-all duration-200 hover:scale-105 text-sm sm:text-base">
+                    Help me plan a project
+                  </button>
+                </div>
+                
+                {/* Keyboard Shortcuts */}
+                <div className="mt-8 sm:mt-12 text-sm text-gray-500">
+                  <p className="hidden sm:block">
+                    Keyboard shortcuts: <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+N</kbd> New Chat • <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl+B</kbd> Toggle Sidebar
+                  </p>
                 </div>
               </div>
             </div>
