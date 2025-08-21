@@ -81,8 +81,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         },
       });
       if (result.data?.insert_chats_one) {
-        onSelectChat(result.data.insert_chats_one.id);
-        onNewChatCreated?.(result.data.insert_chats_one.id);
+        const newChatId = result.data.insert_chats_one.id;
+        onSelectChat(newChatId);
+        onNewChatCreated?.(newChatId);
+        
+        // Auto-close sidebar on mobile after creating chat
+        if (window.innerWidth < 1024) {
+          onToggleCollapse();
+        }
       }
     } catch (err) {
       console.error('Error creating chat:', err);
