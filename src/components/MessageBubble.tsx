@@ -19,7 +19,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   const user = useUserData();
 
   useEffect(() => {
-    if (!message.is_bot && isStreaming) {
+    if (message.is_bot && isStreaming) {
       setIsTyping(true);
       setDisplayedContent('');
       
@@ -72,8 +72,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
         <div className={`flex items-start space-x-3 ${!message.is_bot ? 'flex-row-reverse space-x-reverse' : ''}`}>
           {/* Avatar */}
           <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-            !message.is_bot 
-              ? 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25'
+            message.is_bot 
+              ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
               : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
           }`}>
             {!message.is_bot ? (
@@ -92,8 +92,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
             
             <div className={`px-4 py-3 rounded-2xl shadow-sm ${
               !message.is_bot
-                ? 'bg-gradient-to-r from-orange-600 to-orange-700 text-white shadow-lg shadow-orange-500/20'
-                : 'bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-100'
+                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20'
+                : 'bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 text-gray-100 shadow-lg'
             }`}>
               <div 
                 className="text-sm leading-relaxed"
@@ -101,7 +101,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
               />
               
               {isTyping && (
-                <span className="inline-block w-2 h-4 bg-orange-500 ml-1 animate-pulse"></span>
+                <span className="inline-block w-2 h-4 bg-blue-400 ml-1 animate-pulse"></span>
               )}
             </div>
 
@@ -116,19 +116,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
                 })}
               </span>
               
-              {message.is_bot && (
-                <button
-                  onClick={handleCopy}
-                  className="p-1 rounded hover:bg-gray-700/50 transition-colors duration-200"
-                  title="Copy message"
-                >
-                  {copied ? (
-                    <Check className="w-3 h-3 text-green-400" />
-                  ) : (
-                    <Copy className="w-3 h-3 text-gray-400 hover:text-gray-300" />
-                  )}
-                </button>
-              )}
+              <button
+                onClick={handleCopy}
+                className="p-1 rounded hover:bg-gray-700/50 transition-colors duration-200"
+                title="Copy message"
+              >
+                {copied ? (
+                  <Check className="w-3 h-3 text-green-400" />
+                ) : (
+                  <Copy className="w-3 h-3 text-gray-400 hover:text-gray-300" />
+                )}
+              </button>
             </div>
           </div>
         </div>
