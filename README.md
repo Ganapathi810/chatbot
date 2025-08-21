@@ -22,11 +22,18 @@ ChatMind AI is a full-stack chat application that enables users to have real-tim
 User Registration/Login → Chat Dashboard → Create/Select Chat → Send Message → AI Response
 ```
 
+### AI Response Workflow (n8n Integration)
+```
+User Message → Webhook → GraphQL → HTTP Request → AI Service → Code Processing → GraphQL → Response
+```
+
 ### Technical Flow
 ```
-React Frontend ↔ Apollo Client ↔ Supabase GraphQL API ↔ PostgreSQL Database
+React Frontend ↔ Apollo Client ↔ Supabase GraphQL ↔ PostgreSQL Database
                                         ↓
-                              Hasura Actions (AI Integration)
+                              n8n Workflow Automation
+                                        ↓
+                              AI Service Integration
 ```
 
 ## 🛠️ Technologies Used
@@ -44,6 +51,7 @@ React Frontend ↔ Apollo Client ↔ Supabase GraphQL API ↔ PostgreSQL Databas
 - **PostgreSQL** - Relational database with Row Level Security
 - **GraphQL** - API query language with real-time subscriptions
 - **Hasura Actions** - Custom business logic for AI integration
+- **n8n** - Workflow automation for AI response processing
 - **WebSocket** - Real-time bidirectional communication
 
 ## 🚀 Quick Start
@@ -75,9 +83,15 @@ Create a `.env` file:
 ```env
 VITE_SUPABASE_URL=your-supabase-project-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+N8N_WEBHOOK_URL=your-n8n-webhook-endpoint
 ```
 
-5. **Start the development server**
+5. **Set up n8n workflow**
+   - Import the n8n workflow from `/workflows/chatbot-response.json`
+   - Configure your AI service endpoints
+   - Set up webhook triggers
+
+6. **Start the development server**
 ```bash
 npm run dev
 ```
@@ -97,8 +111,20 @@ src/
 │   └── ...
 ├── graphql/             # GraphQL queries and mutations
 ├── lib/                 # Configuration files
-└── supabase/           # Database migrations
+├── supabase/           # Database migrations
+└── workflows/          # n8n workflow configurations
 ```
+
+## 🤖 AI Integration
+
+The application uses **n8n workflow automation** to process AI responses:
+
+1. **Webhook Trigger**: Receives message from frontend
+2. **GraphQL Query**: Fetches chat context from Supabase
+3. **HTTP Request**: Sends message to AI service (OpenAI/Claude/etc.)
+4. **Code Processing**: Formats and validates AI response
+5. **GraphQL Mutation**: Saves AI response back to database
+6. **Real-time Update**: Frontend receives response via subscription
 
 ## 🔒 Database Schema
 
