@@ -47,7 +47,7 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
+    if (user?.id && !hasCreatedInitialChat) {
       const createInitialChat = async () => {
         try {
           const result = await createChat({
@@ -67,7 +67,7 @@ const ChatHome: React.FC = () => {
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
+  }, [user?.id, hasCreatedInitialChat, createChat]);
 
   // Keyboard shortcuts
   useEffect(() => {

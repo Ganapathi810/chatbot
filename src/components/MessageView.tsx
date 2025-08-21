@@ -113,31 +113,45 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) 
 
     return (
       <div className="flex-1 flex flex-col relative">
-        {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6 pb-32">
-          <div className="max-w-4xl mx-auto space-y-1">
-            {messages.length > 0 ? (
-              messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  isStreaming={streamingMessageId === message.id}
-                />
-              ))
-            ) : null}
-            
-            {isLoading && <TypingIndicator />}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
+        {messages.length > 0 || isLoading ? (
+          <>
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6 pb-32">
+              <div className="max-w-4xl mx-auto space-y-1">
+                {messages.map((message) => (
+                  <MessageBubble
+                    key={message.id}
+                    message={message}
+                    isStreaming={streamingMessageId === message.id}
+                  />
+                ))}
+                
+                {isLoading && <TypingIndicator />}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
 
-        {/* Chat Input → always visible */}
-        <ChatInput 
-          onSendMessage={handleSendMessage} 
-          isLoading={isLoading} 
-          hasMessages={messages.length > 0}
-          isNewChat={isNewChat}
-        />
+            {/* Chat Input → fixed at bottom when there are messages */}
+            <ChatInput 
+              onSendMessage={handleSendMessage} 
+              isLoading={isLoading} 
+              hasMessages={messages.length > 0}
+              isNewChat={isNewChat}
+            />
+          </>
+        ) : (
+          /* Centered input when no messages */
+          <div className="flex-1 flex items-center justify-center">
+            <div className="w-full">
+              <ChatInput 
+                onSendMessage={handleSendMessage} 
+                isLoading={isLoading} 
+                hasMessages={false}
+                isNewChat={isNewChat}
+              />
+            </div>
+          </div>
+        )}
       </div>
     );
 
