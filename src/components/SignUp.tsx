@@ -45,7 +45,12 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const result = await signUpEmailPassword(email, password);
+      const result = await signUpEmailPassword(email, password, {
+        displayName: name,
+        metadata: {
+          firstName: name
+        }
+      });
       if (result.error) {
         setErrors({ general: result.error.message });
       } else {

@@ -32,6 +32,9 @@ const Dashboard: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Welcome!</h2>
           <div className="space-y-2">
             <p className="text-gray-600">
+              <span className="font-medium">Name:</span> {user?.displayName || 'Not provided'}
+            </p>
+            <p className="text-gray-600">
               <span className="font-medium">Email:</span> {user?.email}
             </p>
             <p className="text-gray-600">
