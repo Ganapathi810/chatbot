@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25 animate-fade-in mx-auto relative group">
               <Bot className="w-6 h-6 text-white" />
               {/* Tooltip */}
-              <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+              <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
                 ChatMind AI
                 <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
               </div>
@@ -165,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           {/* Tooltip for collapsed state */}
           {isCollapsed && (
-            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
               New Chat
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
             </div>
@@ -183,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <ChevronRight className="w-4 h-4" />
             {/* Tooltip */}
-            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
               Expand Sidebar
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
             </div>
@@ -243,7 +243,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                  <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
                     {chat.title}
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
                   </div>
@@ -253,6 +253,9 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
       </div>
+
+      {/* Spacer to push user menu to bottom when collapsed */}
+      {isCollapsed && <div className="flex-1"></div>}
 
       {/* User Menu */}
       <div className="border-t border-gray-700/50 p-4 relative" ref={userMenuRef}>
@@ -277,7 +280,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           
           {/* Tooltip for collapsed state */}
           {isCollapsed && (
-            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+            <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-[100] shadow-xl">
               User Menu
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
             </div>
@@ -287,6 +290,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Dropdown Menu */}
         {showUserMenu && (
           <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-[60] animate-slide-up ${
+          <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-[110] animate-slide-up ${
             isCollapsed ? 'left-full ml-2 min-w-[200px]' : 'left-0 right-0'
           }`}>
             <div className="px-4 py-3 border-b border-gray-700/50">

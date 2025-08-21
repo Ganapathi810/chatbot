@@ -103,7 +103,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
                 onKeyDown={handleKeyDown}
                 placeholder={hasMessages ? "Type your message..." : "Type your message here... (Press Enter to send, Shift+Enter for new line)"}
                 disabled={isLoading}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-14 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-14 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base flex items-center"
                 rows={1}
               />
               
