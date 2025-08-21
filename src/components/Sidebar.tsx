@@ -50,6 +50,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const chats: Chat[] = data?.chats || [];
 
+  const getUserDisplayName = () => {
+    return user?.displayName || user?.email?.split('@')[0] || 'User';
+  };
+
   const handleCreateChat = async () => {
     try {
       const result = await createChat({
@@ -205,22 +209,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800/50 transition-all duration-200 text-gray-300 hover:text-white group relative ${
             isCollapsed ? 'justify-center' : 'space-x-3'
           }`}
-          title={isCollapsed ? user?.email : undefined}
+          title={isCollapsed ? getUserDisplayName() : undefined}
         >
           <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
             <User className="w-5 h-5" />
           </div>
           {!isCollapsed && (
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium truncate">{user?.email}</p>
-              <p className="text-xs text-gray-500">Online</p>
+              <p className="text-sm font-medium truncate">{getUserDisplayName()}</p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
             </div>
           )}
           
           {/* Tooltip for collapsed state */}
           {isCollapsed && (
             <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-xl">
-              {user?.email}
+              {getUserDisplayName()}
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-800/95 border-l border-b border-gray-700/50 rotate-45"></div>
             </div>
           )}
@@ -231,9 +235,13 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-50 animate-slide-up ${
             isCollapsed ? 'left-full ml-2' : 'left-0 right-0'
           }`}>
+            <div className="px-4 py-3 border-b border-gray-700/50">
+              <p className="text-sm font-medium text-white truncate">{getUserDisplayName()}</p>
+              <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+            </div>
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-gray-700 rounded-lg transition-colors duration-200 text-red-400 hover:text-red-300"
+              className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-red-500/10 rounded-b-lg transition-all duration-200 text-red-400 hover:text-red-300 hover:bg-red-500/20"
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
