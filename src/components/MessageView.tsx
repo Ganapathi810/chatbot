@@ -47,22 +47,22 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
 
 
   const scrollToBottom = () => {
-    // Scroll to top to show newest messages
+    // Scroll to bottom to show newest messages
     const messagesContainer = messagesEndRef.current?.parentElement;
     if (messagesContainer) {
       messagesContainer.scrollTo({
-        top: 0,
+        top: messagesContainer.scrollHeight,
         behavior: 'smooth'
       });
     }
   };
 
   useEffect(() => {
-    // Scroll to top immediately when new messages arrive
+    // Scroll to bottom immediately when new messages arrive
     if (messages.length > 0) {
-      // Use requestAnimationFrame for smoother scrolling to top
+      // Use requestAnimationFrame for smoother scrolling to bottom
       requestAnimationFrame(() => {
-        scrollToBottom(); // This now scrolls to top
+        scrollToBottom();
       });
     }
   }, [messages.length]);
@@ -71,25 +71,25 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   useEffect(() => {
     if (isLoading) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to top to show typing indicator
+        scrollToBottom(); // Scroll to bottom to show typing indicator
       }, 50);
       
       return () => clearTimeout(timeoutId);
     }
   }, [isLoading]);
 
-  // Enhanced scroll effect for when user sends a message - scroll to top
+  // Enhanced scroll effect for when user sends a message - scroll to bottom
   useEffect(() => {
     if (currentUserMessage && messages.length > 0) {
-      // Find the latest user message
-      const latestMessage = messages[0]; // First message is now the latest
+      // Find the latest user message (last in chronological order)
+      const latestMessage = messages[messages.length - 1];
       if (latestMessage && !latestMessage.is_bot) {
-        // Immediate scroll to top for user's own message
+        // Immediate scroll to bottom for user's own message
         requestAnimationFrame(() => {
           const messagesContainer = messagesEndRef.current?.parentElement;
           if (messagesContainer) {
             messagesContainer.scrollTo({
-              top: 0,
+              top: messagesContainer.scrollHeight,
               behavior: 'smooth'
             });
           }
@@ -102,27 +102,27 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   useEffect(() => {
     if (streamingMessages.size > 0) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to top during streaming
+        scrollToBottom(); // Scroll to bottom during streaming
       }, 100);
     
     return () => clearTimeout(timeoutId);
     }
   }, [streamingMessages]);
 
-  // Handle immediate user message display - scroll to top
+  // Handle immediate user message display - scroll to bottom
   useEffect(() => {
-    // When user sends a message, immediately scroll to top to show it
+    // When user sends a message, immediately scroll to bottom to show it
     if (messages.length > 0) {
-      const latestMessage = messages[0]; // First message is now the latest
+      const latestMessage = messages[messages.length - 1]; // Last message is the latest
       const messageAge = Date.now() - new Date(latestMessage.created_at).getTime();
       
       // If it's a very recent message (within 1 second), it's likely just sent
       if (messageAge < 1000) {
-        // Immediate scroll to top without delay
+        // Immediate scroll to bottom without delay
         const messagesContainer = messagesEndRef.current?.parentElement;
         if (messagesContainer) {
           messagesContainer.scrollTo({
-            top: 0,
+            top: messagesContainer.scrollHeight,
             behavior: 'smooth'
           });
         }
@@ -130,11 +130,11 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
     }
   }, [messages]);
 
-  // Auto-scroll to top when typing indicator appears
+  // Auto-scroll to bottom when typing indicator appears
   useEffect(() => {
     if (isLoading) {
       const timeoutId = setTimeout(() => {
-        scrollToBottom(); // Scroll to top for typing indicator
+        scrollToBottom(); // Scroll to bottom for typing indicator
       }, 200);
       
       return () => clearTimeout(timeoutId);
@@ -144,7 +144,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   // Handle streaming for new bot messages
   useEffect(() => {
     const botMessages = messages.filter(msg => msg.is_bot);
-    const latestBotMessage = botMessages[0]; // First bot message is now the latest
+    const latestBotMessage = botMessages[botMessages.length - 1]; // Last bot message is the latest
     
     if (latestBotMessage && !streamingMessages.has(latestBotMessage.id)) {
       // Check if this is a new bot message (created within last 2 seconds)
@@ -217,9 +217,8 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pt-40 h-0 scroll-smooth flex flex-col-reverse">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-40 h-0 scroll-smooth">
               <div className="max-w-4xl mx-auto space-y-1">
-                <div ref={messagesEndRef} className="h-8 sm:h-12" />
                 {messages.map((message) => (
                   <MessageBubble
                     key={message.id}
@@ -227,14 +226,15 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                     isStreaming={streamingMessages.has(message.id)}
                   />
                 ))}
+                <div ref={messagesEndRef} className="h-8 sm:h-12" />
               </div>
             </div>
 
-            {/* Fixed Typing Indicator - At the top */}
+            {/* Fixed Typing Indicator - At the bottom */}
             {isLoading && (
               <div className={`${
                 isCollapsed ? 'left-0' : 'left-80'
-              } right-0 fixed top-20 px-4 sm:px-6 pointer-events-none z-10`}>
+              } right-0 fixed bottom-24 px-4 sm:px-6 pointer-events-none z-10`}>
                 <div className="max-w-4xl mx-auto">
                   <TypingIndicator />
                 </div>
