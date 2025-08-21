@@ -32,7 +32,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
           setIsTyping(false);
           clearInterval(typingInterval);
         }
-      }, 30);
+      }, 25); // Slightly faster typing speed
 
       return () => clearInterval(typingInterval);
     } else {
@@ -101,7 +101,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
               />
               
               {isTyping && (
-                <span className="inline-block w-2 h-4 bg-blue-400 ml-1 animate-pulse"></span>
+                <span className="inline-block w-0.5 h-4 bg-orange-400 ml-1 animate-pulse"></span>
               )}
             </div>
 

@@ -23,7 +23,7 @@ interface MessageViewProps {
 
 const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, isCollapsed = false }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
+  const [streamingMessages, setStreamingMessages] = useState<Set<string>>(new Set());
   const [currentUserMessage, setCurrentUserMessage] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
@@ -65,14 +65,38 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
 
   // Scroll to bottom when a new message is being typed (streaming)
   useEffect(() => {
-    if (streamingMessageId) {
+    if (streamingMessages.size > 0) {
       const timeoutId = setTimeout(() => {
         scrollToBottom();
       }, 50);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [streamingMessageId]);
+  }, [streamingMessages]);
+
+  // Handle streaming for new bot messages
+  useEffect(() => {
+    const botMessages = messages.filter(msg => msg.is_bot);
+    const latestBotMessage = botMessages[botMessages.length - 1];
+    
+    if (latestBotMessage && !streamingMessages.has(latestBotMessage.id)) {
+      // Check if this is a new bot message (created within last 2 seconds)
+      const messageAge = Date.now() - new Date(latestBotMessage.created_at).getTime();
+      if (messageAge < 2000) {
+        setStreamingMessages(prev => new Set(prev).add(latestBotMessage.id));
+        
+        // Remove from streaming after animation completes
+        const streamingDuration = latestBotMessage.content.length * 30 + 500;
+        setTimeout(() => {
+          setStreamingMessages(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(latestBotMessage.id);
+            return newSet;
+          });
+        }, streamingDuration);
+      }
+    }
+  }, [messages, streamingMessages]);
 
   const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim() || !user?.id || isLoading || !chatId) return;
@@ -98,22 +122,6 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
           message: currentMessage,
         },
       });
-      
-      // Set streaming effect for the bot response
-      if (botResult.data?.chatbot_response?.response) {
-        // Find the latest bot message and set it for streaming
-        setTimeout(() => {
-          const latestMessages = subscriptionData?.messages || queryData?.messages || [];
-          const latestBotMessage = latestMessages
-            .filter((msg: Message) => msg.is_bot)
-            .sort((a: Message, b: Message) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
-          
-          if (latestBotMessage) {
-            setStreamingMessageId(latestBotMessage.id);
-            setTimeout(() => setStreamingMessageId(null), latestBotMessage.content.length * 30 + 1000);
-          }
-        }, 500);
-      }
     } catch (err) {
       console.error('Error sending message:', err);
       
@@ -148,7 +156,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                   <MessageBubble
                     key={message.id}
                     message={message}
-                    isStreaming={streamingMessageId === message.id}
+                    isStreaming={streamingMessages.has(message.id)}
                   />
                 ))}
                 
