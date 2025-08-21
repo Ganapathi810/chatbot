@@ -47,7 +47,7 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
+    if (user?.id && chats.length === 0 && !hasCreatedInitialChat && !selectedChatId) {
       const createInitialChat = async () => {
         try {
           const result = await createChat({
@@ -57,9 +57,10 @@ const ChatHome: React.FC = () => {
             },
           });
           if (result.data?.insert_chats_one) {
-            setSelectedChatId(result.data.insert_chats_one.id);
+            const newChatId = result.data.insert_chats_one.id;
+            setSelectedChatId(newChatId);
             setHasCreatedInitialChat(true);
-            setNewChatIds(prev => new Set(prev).add(result.data.insert_chats_one.id));
+            setNewChatIds(prev => new Set(prev).add(newChatId));
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
@@ -68,7 +69,14 @@ const ChatHome: React.FC = () => {
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
+  }, [user?.id, chats.length, hasCreatedInitialChat, selectedChatId, createChat]);
+
+  // Select first available chat if none is selected
+  useEffect(() => {
+    if (chats.length > 0 && !selectedChatId) {
+      setSelectedChatId(chats[0].id);
+    }
+  }, [chats, selectedChatId]);
 
   // Keyboard shortcuts
   useEffect(() => {
