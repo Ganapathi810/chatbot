@@ -62,15 +62,22 @@ const SignUp: React.FC = () => {
           setErrors({ general: result.error.message });
         }
       } else {
-        // Always show email verification message for new signups
-        if (result.needsEmailVerification || !result.session) {
+        // Check if email verification is required
+        console.log('Signup result:', result);
+        
+        if (result.needsEmailVerification) {
+          // Email verification is explicitly required
           setSignUpState('email-sent');
-        } else {
-          // This case is rare - when email verification is disabled
+        } else if (result.session) {
+          // User is immediately signed in (email verification disabled)
           setSignUpState('verified');
+        } else {
+          // Ambiguous case - assume email verification is needed
+          setSignUpState('email-sent');
         }
       }
     } catch (err) {
+      console.error('Signup error:', err);
       setErrors({ general: 'An unexpected error occurred. Please try again.' });
     }
   };
