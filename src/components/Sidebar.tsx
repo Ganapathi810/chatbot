@@ -41,6 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onNewChatCreated
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
   const { data, loading, error } = useQuery(GET_CHATS);
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
@@ -49,6 +50,23 @@ const Sidebar: React.FC<SidebarProps> = ({
   const user = useUserData();
 
   const chats: Chat[] = data?.chats || [];
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   const getUserDisplayName = () => {
     return user?.displayName || user?.email?.split('@')[0] || 'User';
@@ -203,7 +221,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User Menu */}
-      <div className="border-t border-gray-700/50 p-4 relative">
+      <div className="border-t border-gray-700/50 p-4 relative" ref={userMenuRef}>
         <button
           onClick={() => setShowUserMenu(!showUserMenu)}
           className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800/50 transition-all duration-200 text-gray-300 hover:text-white group relative ${
