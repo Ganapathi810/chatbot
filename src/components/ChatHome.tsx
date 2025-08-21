@@ -10,7 +10,6 @@ import { MessageCircle, Sparkles, Send } from 'lucide-react';
 const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [hasCreatedInitialChat, setHasCreatedInitialChat] = useState(false);
   const [isCreatingInitialChat, setIsCreatingInitialChat] = useState(false);
   const [newChatIds, setNewChatIds] = useState<Set<string>>(new Set());
   const { data } = useQuery(GET_CHATS, {
@@ -50,7 +49,7 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && chats.length === 0 && !hasCreatedInitialChat && !isCreatingInitialChat) {
+    if (user?.id && chats.length === 0 && !isCreatingInitialChat) {
       const createInitialChat = async () => {
         setIsCreatingInitialChat(true);
         try {
@@ -63,19 +62,16 @@ const ChatHome: React.FC = () => {
           if (result.data?.insert_chats_one) {
             const newChatId = result.data.insert_chats_one.id;
             setSelectedChatId(newChatId);
-            setHasCreatedInitialChat(true);
             setNewChatIds(prev => new Set(prev).add(newChatId));
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
         } finally {
           setIsCreatingInitialChat(false);
-          setHasCreatedInitialChat(true);
         }
       };
       createInitialChat();
     }
-  }, [user?.id, chats.length, hasCreatedInitialChat, isCreatingInitialChat, createChat]);
 
   // Select first available chat if none is selected
   useEffect(() => {
