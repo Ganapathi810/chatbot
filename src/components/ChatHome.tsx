@@ -117,33 +117,6 @@ const ChatHome: React.FC = () => {
                   Ready when you are.
                 </h1>
                 
-                {/* Chat Input Area */}
-                    {/* Animated border - only visible on focus */}
-                    <div className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none overflow-hidden ${
-                      isFocused ? 'opacity-100' : 'opacity-0'
-                    }`}>
-                      <div className="absolute inset-0 rounded-full animate-border-rotate">
-                        <div className="w-full h-full rounded-full border-2 border-transparent bg-gradient-conic from-orange-500 via-blue-500 via-purple-500 to-orange-500 bg-clip-border"></div>
-                      </div>
-                    </div>
-                    
-                    <div className="relative flex items-center px-4 sm:px-6 py-4 sm:py-5 bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group-focus-within:border-transparent">
-                      <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
-                        <Sparkles className="w-4 h-4 text-white" />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Ask anything"
-                        className="flex-1 bg-transparent text-white placeholder-gray-400 text-lg focus:outline-none pr-12"
-                        readOnly
-                      />
-                      <button className="absolute right-3 p-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 hover:scale-105">
-                        <Send className="w-4 h-4 text-white" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                
                 {/* Feature Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
                   <div className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all duration-300 hover:scale-105 group">
