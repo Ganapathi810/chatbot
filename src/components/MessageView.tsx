@@ -66,7 +66,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
       });
       
       // Set streaming effect for the bot response
-      if (botResult.data?.chatbot_response?.success) {
+      if (botResult.data?.chatbot_response?.response) {
         // Find the latest bot message and set it for streaming
         setTimeout(() => {
           const latestMessages = data?.messages || [];
@@ -82,6 +82,12 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId }) => {
       }
     } catch (err) {
       console.error('Error sending message:', err);
+      
+      // Handle specific authorization errors
+      if (err instanceof Error && err.message.includes('user is not authorized to access the chat')) {
+        // You might want to show a user-friendly error message here
+        console.error('Authorization error: User cannot access this chat');
+      }
     } finally {
       setIsLoading(false);
     }

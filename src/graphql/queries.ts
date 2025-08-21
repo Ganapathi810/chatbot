@@ -77,7 +77,6 @@ export const TRIGGER_CHATBOT = gql`
   mutation TriggerChatbot($chat_id: uuid!, $message: String!) {
     chatbot_response(chat_id: $chat_id, message: $message) {
       response
-      success
     }
   }
 `;
