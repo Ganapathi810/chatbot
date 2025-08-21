@@ -73,7 +73,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
           {/* Avatar */}
           <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
             message.is_bot 
-              ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
+              ? 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25'
               : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
           }`}>
             {!message.is_bot ? (
@@ -93,7 +93,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
             <div className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl shadow-sm ${
               !message.is_bot
                 ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20'
-                : 'bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 text-gray-100 shadow-lg'
+                : 'bg-gray-800/90 backdrop-blur-sm border border-gray-700/60 text-gray-100 shadow-lg shadow-gray-900/20'
             }`}>
               <div 
                 className="text-sm sm:text-base leading-relaxed break-words"
