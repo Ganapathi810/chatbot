@@ -174,6 +174,7 @@ const ChatHome: React.FC = () => {
             <MessageView 
               chatId={selectedChatId} 
               isNewChat={newChatIds.has(selectedChatId)}
+              isCollapsed={isCollapsed}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">

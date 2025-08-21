@@ -17,9 +17,10 @@ interface Message {
 interface MessageViewProps {
   chatId: string;
   isNewChat?: boolean;
+  isCollapsed?: boolean;
 }
 
-const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) => {
+const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, isCollapsed = false }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -137,6 +138,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) 
               isLoading={isLoading} 
               hasMessages={messages.length > 0}
               isNewChat={isNewChat}
+              isCollapsed={isCollapsed}
             />
           </>
         ) : (
@@ -148,6 +150,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) 
                 isLoading={isLoading} 
                 hasMessages={false}
                 isNewChat={isNewChat}
+                isCollapsed={isCollapsed}
               />
             </div>
           </div>
