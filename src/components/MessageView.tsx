@@ -124,9 +124,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false }) 
                   isStreaming={streamingMessageId === message.id}
                 />
               ))
-            ) : (
-              <p className="text-gray-500 text-center">No messages yet. Start the conversation 👋</p>
-            )}
+            ) : null}
             
             {isLoading && <TypingIndicator />}
             <div ref={messagesEndRef} />
