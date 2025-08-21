@@ -9,7 +9,7 @@ const SignUp: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; general?: string }>({});
-  const [signUpState, setSignUpState] = useState<'form' | 'email-sent' | 'verified'>('form');
+  const [signUpState, setSignUpState] = useState<'form' | 'email-sent' | 'verified' | 'verification-failed'>('form');
   
   const { signUpEmailPassword, isLoading, error } = useSignUpEmailPassword();
   const user = useUserData();
@@ -51,13 +51,22 @@ const SignUp: React.FC = () => {
           firstName: name
         }
       });
+      
       if (result.error) {
-        setErrors({ general: result.error.message });
+        // Handle specific error cases
+        if (result.error.message.includes('email-already-in-use')) {
+          setErrors({ general: 'An account with this email already exists. Please try signing in instead.' });
+        } else if (result.error.message.includes('weak-password')) {
+          setErrors({ password: 'Password is too weak. Please choose a stronger password.' });
+        } else {
+          setErrors({ general: result.error.message });
+        }
       } else {
-        // Check if email confirmation is required
-        if (result.needsEmailVerification) {
+        // Always show email verification message for new signups
+        if (result.needsEmailVerification || !result.session) {
           setSignUpState('email-sent');
         } else {
+          // This case is rare - when email verification is disabled
           setSignUpState('verified');
         }
       }
@@ -66,42 +75,60 @@ const SignUp: React.FC = () => {
     }
   };
 
+  // Check if user gets verified after email confirmation
+  React.useEffect(() => {
+    if (user && signUpState === 'email-sent') {
+      setSignUpState('verified');
+    }
+  }, [user, signUpState]);
   // Show email verification sent message
   if (signUpState === 'email-sent') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
         
         <div className="w-full max-w-md text-center relative z-10 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl mb-6 shadow-2xl shadow-blue-500/30 animate-bounce-subtle">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mb-6 shadow-2xl shadow-orange-500/30 animate-bounce-subtle">
             <Bot className="w-10 h-10 text-white" />
           </div>
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-gray-700/50">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
-              Check Your Email
+              Verification Email Sent! 📧
             </h1>
             <p className="text-gray-400 mb-4">
-              We've sent a verification email to:
+              We've sent a verification link to:
             </p>
-            <p className="text-blue-400 font-medium mb-6 break-all">
+            <p className="text-orange-400 font-medium mb-6 break-all">
               {email}
             </p>
+            <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4 mb-6">
+              <p className="text-orange-300 text-sm font-medium mb-2">⚠️ Important:</p>
+              <p className="text-gray-300 text-sm">
+                You must verify your email before you can sign in. Click the verification link in your email to activate your account.
+              </p>
+            </div>
             <p className="text-gray-400 text-sm mb-6">
-              Please click the verification link in your email to activate your account and start using ChatMind AI.
+              After clicking the verification link, you'll be able to sign in and start using ChatMind AI.
             </p>
             <div className="space-y-3">
               <Link 
                 to="/signin" 
-                className="inline-block bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transform"
+                className="inline-block w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 transform"
               >
-                Go to Sign In
+                Go to Sign In Page
               </Link>
-              <p className="text-gray-500 text-xs">
-                Didn't receive the email? Check your spam folder or try signing up again.
+              <button
+                onClick={() => setSignUpState('form')}
+                className="w-full text-gray-400 hover:text-gray-300 text-sm underline transition-colors duration-200"
+              >
+                ← Back to Sign Up
+              </button>
+              <p className="text-gray-500 text-xs mt-4">
+                Didn't receive the email? Check your spam/junk folder. The email may take a few minutes to arrive.
               </p>
             </div>
           </div>
