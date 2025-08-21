@@ -119,14 +119,15 @@ const ChatHome: React.FC = () => {
                 
                 {/* Chat Input Area */}
                 <div className="w-full max-w-3xl mx-auto mb-8 sm:mb-12">
-                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group overflow-hidden">
-                    {/* Animated border overlay */}
-                    <div className="absolute inset-0 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
-                      <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 animate-spin-slow"></div>
-                      <div className="absolute inset-0.5 rounded-full bg-gray-800/50 backdrop-blur-sm"></div>
+                  <div className="relative group">
+                    {/* Animated border - only visible on focus */}
+                    <div className="absolute inset-0 rounded-full opacity-0 group-focus-within:opacity-100 group-focus-within:animate-border-spin transition-opacity duration-300 pointer-events-none">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 p-0.5">
+                        <div className="w-full h-full rounded-full bg-gray-800/50 backdrop-blur-sm"></div>
+                      </div>
                     </div>
                     
-                    <div className="relative flex items-center px-4 sm:px-6 py-4 sm:py-5">
+                    <div className="relative flex items-center px-4 sm:px-6 py-4 sm:py-5 bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group-focus-within:border-transparent">
                       <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
                         <Sparkles className="w-4 h-4 text-white" />
                       </div>

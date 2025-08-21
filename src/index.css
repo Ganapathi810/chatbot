@@ -96,6 +96,17 @@
   }
 }
 
+@keyframes border-spin {
+  0% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0;
+  }
+}
+
 .animate-pulse-border {
   animation: pulse-border 2s ease-in-out infinite;
 }
@@ -104,6 +115,9 @@
   animation: spin-slow 3s linear infinite;
 }
 
+.animate-border-spin {
+  animation: border-spin 1s linear forwards;
+}
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 6px;
