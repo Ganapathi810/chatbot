@@ -36,12 +36,32 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const messages: Message[] = useMemo(() => data?.messages || [], [data?.messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest'
+    });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+    // Scroll to bottom when new messages arrive or when loading state changes
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [messages.length, isLoading]);
+
+  // Scroll to bottom when a new message is being typed (streaming)
+  useEffect(() => {
+    if (streamingMessageId) {
+      const timeoutId = setTimeout(() => {
+        scrollToBottom();
+      }, 50);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [streamingMessageId]);
 
   const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim() || !user?.id || isLoading) return;
@@ -117,7 +137,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-32 h-0">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 pb-32 h-0 scroll-smooth">
               <div className="max-w-4xl mx-auto space-y-1">
                 {messages.map((message) => (
                   <MessageBubble
@@ -128,7 +148,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
                 ))}
                 
                 {isLoading && <TypingIndicator />}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-4" />
               </div>
             </div>
 
