@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         })
         .filter(num => num > 0);
       
-      const nextNumber = chatNumbers.length > 0 ? Math.max(...chatNumbers) + 1 : chats.length + 1;
+      const nextNumber = chatNumbers.length > 0 ? Math.max(...chatNumbers) + 1 : 1;
       
       const result = await createChat({
         variables: {

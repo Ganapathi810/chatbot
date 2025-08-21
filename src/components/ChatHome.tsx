@@ -120,6 +120,20 @@ const ChatHome: React.FC = () => {
           userId: user?.id,
         },
       });
+      if (result.data?.insert_chats_one) {
+        const newChatId = result.data.insert_chats_one.id;
+        setSelectedChatId(newChatId);
+        setNewChatIds(prev => new Set(prev).add(newChatId));
+        
+        // Auto-close sidebar on mobile after creating chat
+        if (window.innerWidth < 1024) {
+          setIsCollapsed(true);
+        }
+      }
+    } catch (err) {
+      console.error('Error creating chat:', err);
+    }
+  };
 
   return (
     <div className="h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex overflow-hidden">
