@@ -11,6 +11,7 @@ const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasCreatedInitialChat, setHasCreatedInitialChat] = useState(false);
+  const [newChatIds, setNewChatIds] = useState<Set<string>>(new Set());
   const { data } = useQuery(GET_CHATS);
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
@@ -34,6 +35,7 @@ const ChatHome: React.FC = () => {
           if (result.data?.insert_chats_one) {
             setSelectedChatId(result.data.insert_chats_one.id);
             setHasCreatedInitialChat(true);
+            setNewChatIds(prev => new Set(prev).add(result.data.insert_chats_one.id));
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
@@ -82,6 +84,7 @@ const ChatHome: React.FC = () => {
           onSelectChat={setSelectedChatId}
           isCollapsed={isCollapsed}
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          onNewChatCreated={(chatId) => setNewChatIds(prev => new Set(prev).add(chatId))}
         />
 
         {/* Main Content Area */}
@@ -91,7 +94,10 @@ const ChatHome: React.FC = () => {
 
           {/* Chat Content */}
           {selectedChatId ? (
-            <MessageView chatId={selectedChatId} />
+            <MessageView 
+              chatId={selectedChatId} 
+              isNewChat={newChatIds.has(selectedChatId)}
+            />
           ) : (
             <div className="flex-1 flex items-center justify-center relative">
               <div className="text-center max-w-2xl mx-auto px-8 animate-fade-in">

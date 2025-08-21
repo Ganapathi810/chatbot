@@ -6,13 +6,15 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isLoading: boolean;
   hasMessages: boolean;
+  isNewChat?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMessages }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMessages, isNewChat = false }) => {
   const [message, setMessage] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useUserData();
 
@@ -20,24 +22,33 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
   const welcomeText = `How can I help you today, ${userName}?`;
 
   useEffect(() => {
-    if (!hasMessages && welcomeText) {
-      setIsTyping(true);
-      setDisplayedText('');
-      
-      let currentIndex = 0;
-      const typingInterval = setInterval(() => {
-        if (currentIndex < welcomeText.length) {
-          setDisplayedText(welcomeText.slice(0, currentIndex + 1));
-          currentIndex++;
-        } else {
-          setIsTyping(false);
-          clearInterval(typingInterval);
-        }
-      }, 50);
+    if (!hasMessages && welcomeText && !hasShownWelcome) {
+      // Show streaming animation only for the first time in session (not new chats)
+      if (!isNewChat) {
+        setIsTyping(true);
+        setDisplayedText('');
+        
+        let currentIndex = 0;
+        const typingInterval = setInterval(() => {
+          if (currentIndex < welcomeText.length) {
+            setDisplayedText(welcomeText.slice(0, currentIndex + 1));
+            currentIndex++;
+          } else {
+            setIsTyping(false);
+            setHasShownWelcome(true);
+            clearInterval(typingInterval);
+          }
+        }, 50);
 
-      return () => clearInterval(typingInterval);
+        return () => clearInterval(typingInterval);
+      } else {
+        // For new chats, show immediately without animation
+        setDisplayedText(welcomeText);
+        setIsTyping(false);
+        setHasShownWelcome(true);
+      }
     }
-  }, [welcomeText, hasMessages]);
+  }, [welcomeText, hasMessages, hasShownWelcome, isNewChat]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

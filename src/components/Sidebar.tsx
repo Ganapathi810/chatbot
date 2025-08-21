@@ -30,13 +30,15 @@ interface SidebarProps {
   onSelectChat: (chatId: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  onNewChatCreated?: (chatId: string) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
   selectedChatId, 
   onSelectChat, 
   isCollapsed, 
-  onToggleCollapse 
+  onToggleCollapse,
+  onNewChatCreated
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { data, loading, error } = useQuery(GET_CHATS);
@@ -58,6 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       });
       if (result.data?.insert_chats_one) {
         onSelectChat(result.data.insert_chats_one.id);
+        onNewChatCreated?.(result.data.insert_chats_one.id);
       }
     } catch (err) {
       console.error('Error creating chat:', err);
