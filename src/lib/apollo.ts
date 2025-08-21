@@ -49,6 +49,19 @@ export const apolloClient = new ApolloClient({
       Query: {
         fields: {
           chats: {
+            merge: false,
+          },
+          messages: {
+            merge: false,
+          },
+        },
+      },
+      Subscription: {
+        fields: {
+          chats: {
+            merge: false,
+          },
+          messages: {
             merge(existing = [], incoming) {
               return incoming;
             },
@@ -57,4 +70,17 @@ export const apolloClient = new ApolloClient({
       },
     },
   }),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all',
+    },
+    query: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all',
+    },
+    mutate: {
+      errorPolicy: 'all',
+    },
+  },
 });
