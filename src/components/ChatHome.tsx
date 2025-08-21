@@ -5,7 +5,7 @@ import { GET_CHATS, CREATE_CHAT } from '../graphql/queries';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import MessageView from './MessageView';
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { MessageCircle, Sparkles, Send } from 'lucide-react';
 
 const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -119,25 +119,26 @@ const ChatHome: React.FC = () => {
                 
                 {/* Chat Input Area */}
                 <div className="w-full max-w-3xl mx-auto mb-8 sm:mb-12">
-                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300">
-                    <div className="flex items-center px-4 sm:px-6 py-4 sm:py-5">
+                  <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-orange-500/30 transition-all duration-300 group">
+                    {/* Animated border overlay */}
+                    <div className="absolute inset-0 rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-300">
+                      <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 animate-spin-slow"></div>
+                      <div className="absolute inset-0.5 rounded-full bg-gray-800/50 backdrop-blur-sm"></div>
+                    </div>
+                    
+                    <div className="relative flex items-center px-4 sm:px-6 py-4 sm:py-5">
                       <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
                         <Sparkles className="w-4 h-4 text-white" />
                       </div>
                       <input
                         type="text"
                         placeholder="Ask anything"
-                        className="flex-1 bg-transparent text-white placeholder-gray-400 text-lg focus:outline-none"
+                        className="flex-1 bg-transparent text-white placeholder-gray-400 text-lg focus:outline-none pr-12"
                         readOnly
                       />
-                      <div className="flex items-center space-x-2 ml-4">
-                        <button className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors duration-200">
-                          <MessageCircle className="w-5 h-5 text-gray-400" />
-                        </button>
-                        <button className="p-2 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors duration-200">
-                          <Sparkles className="w-5 h-5 text-gray-400" />
-                        </button>
-                      </div>
+                      <button className="absolute right-3 p-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-200 hover:scale-105">
+                        <Send className="w-4 h-4 text-white" />
+                      </button>
                     </div>
                   </div>
                 </div>

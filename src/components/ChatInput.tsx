@@ -94,11 +94,19 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
         )}
         
         <form onSubmit={handleSubmit} className="relative">
-          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border transition-all duration-500 ${
+          <div className={`relative bg-gray-800/50 backdrop-blur-sm rounded-full border transition-all duration-500 group ${
             isFocused 
-              ? 'border-orange-500/70 shadow-lg shadow-orange-500/20 ring-2 ring-orange-500/30 animate-pulse-border' 
+              ? 'border-transparent shadow-lg shadow-orange-500/20' 
               : 'border-gray-600/50 hover:border-gray-500/50'
           }`}>
+            {/* Animated border overlay - only visible when focused */}
+            <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+              isFocused ? 'opacity-100' : 'opacity-0'
+            }`}>
+              <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-orange-500 via-blue-500 to-purple-500 animate-spin-slow"></div>
+              <div className="absolute inset-0.5 rounded-full bg-gray-800/50 backdrop-blur-sm"></div>
+            </div>
+            
             <textarea
               ref={textareaRef}
               value={message}
@@ -108,14 +116,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
               onBlur={() => setIsFocused(false)}
               placeholder={hasMessages ? "Type your message..." : "Type your message here... (Press Enter to send, Shift+Enter for new line)"}
               disabled={isLoading}
-              className="w-full px-4 sm:px-6 py-3 sm:py-4 pr-12 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
+              className="relative z-10 w-full px-4 sm:px-6 py-3 sm:py-4 pr-12 sm:pr-16 bg-transparent text-white placeholder-gray-400 resize-none focus:outline-none min-h-[50px] sm:min-h-[60px] max-h-[150px] sm:max-h-[200px] overflow-y-auto text-sm sm:text-base"
               rows={1}
             />
             
             <button
               type="submit"
               disabled={!message.trim() || isLoading}
-              className="absolute right-2 sm:right-3 bottom-2 sm:bottom-3 p-2 sm:p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-lg sm:rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 disabled:hover:scale-100 disabled:hover:shadow-none"
+              className="absolute right-2 sm:right-3 bottom-2 sm:bottom-3 z-20 p-2 sm:p-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25 disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
