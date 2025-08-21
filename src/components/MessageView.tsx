@@ -157,7 +157,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
         {messages.length > 0 || isLoading ? (
           <>
             {/* Messages Container */}
-            <div className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out pb-16 ${
+            <div className={`flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 sm:py-6 h-0 scroll-smooth transition-all duration-500 ease-out pb-82 ${
               messages.length > 0 && !isLoading && streamingMessages.size === 0 ? 'pb-96' : 'pb-40'
             }`}>
               <div className="max-w-4xl mx-auto space-y-1">
