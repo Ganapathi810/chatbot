@@ -158,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className={`flex-1 overflow-y-auto px-2 ${isCollapsed ? 'hidden' : ''}`}>
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
@@ -250,8 +250,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Dropdown Menu */}
         {showUserMenu && (
-          <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-50 animate-slide-up ${
-            isCollapsed ? 'left-full ml-2' : 'left-0 right-0'
+          <div className={`absolute bottom-full mb-2 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-xl z-[60] animate-slide-up ${
+            isCollapsed ? 'left-full ml-2 min-w-[200px]' : 'left-0 right-0'
           }`}>
             <div className="px-4 py-3 border-b border-gray-700/50">
               <p className="text-sm font-medium text-white truncate">{getUserDisplayName()}</p>
