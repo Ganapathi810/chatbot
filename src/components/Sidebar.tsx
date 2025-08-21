@@ -251,7 +251,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div className={`flex-1 overflow-y-auto px-2 ${isCollapsed ? 'hidden' : ''}`}>
         {loading ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center py-8 h-32">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
           </div>
         ) : error ? (

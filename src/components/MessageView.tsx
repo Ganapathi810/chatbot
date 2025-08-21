@@ -117,7 +117,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center h-full">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     );
@@ -126,7 +126,7 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   if (error) {
     console.log(error)
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center h-full">
         <p className="text-red-600">Error loading messages</p>
       </div>
     );
