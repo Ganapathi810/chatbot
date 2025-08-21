@@ -52,4 +52,9 @@ export const apolloClient = new ApolloClient({
             merge(existing = [], incoming) {
               return incoming;
             },
+          },
+        },
+      },
+    },
+  }),
 });
