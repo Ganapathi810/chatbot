@@ -11,6 +11,7 @@ const ChatHome: React.FC = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCreatingInitialChat, setIsCreatingInitialChat] = useState(false);
+  const [hasAttemptedInitialChat, setHasAttemptedInitialChat] = useState(false);
   const [newChatIds, setNewChatIds] = useState<Set<string>>(new Set());
   const { data } = useQuery(GET_CHATS, {
     fetchPolicy: 'cache-and-network',
@@ -49,10 +50,11 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    // Only create initial chat if user exists, no chats exist, data is loaded, and we haven't started creating one
-    if (user?.id && data && chats.length === 0 && !isCreatingInitialChat) {
+    // Only create initial chat if user exists, no chats exist, data is loaded, we haven't started creating one, and haven't attempted before
+    if (user?.id && data && chats.length === 0 && !isCreatingInitialChat && !hasAttemptedInitialChat) {
       const createInitialChat = async () => {
         setIsCreatingInitialChat(true);
+        setHasAttemptedInitialChat(true);
         try {
           const result = await createChat({
             variables: {
@@ -73,7 +75,15 @@ const ChatHome: React.FC = () => {
       };
       createInitialChat();
     }
-  }, [user?.id, data, chats.length, isCreatingInitialChat, createChat]);
+  }, [user?.id, data, chats.length, isCreatingInitialChat, hasAttemptedInitialChat, createChat]);
+
+  // Reset the attempt flag when user changes (for proper cleanup)
+  useEffect(() => {
+    if (!user?.id) {
+      setHasAttemptedInitialChat(false);
+      setIsCreatingInitialChat(false);
+    }
+  }, [user?.id]);
 
   // Select first available chat if none is selected
   useEffect(() => {
