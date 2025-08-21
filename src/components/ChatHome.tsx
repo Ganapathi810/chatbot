@@ -47,7 +47,7 @@ const ChatHome: React.FC = () => {
 
   // Auto-create and select first chat after login
   useEffect(() => {
-    if (user?.id && !hasCreatedInitialChat) {
+    if (user?.id && chats.length === 0 && !hasCreatedInitialChat) {
       const createInitialChat = async () => {
         try {
           const result = await createChat({
@@ -63,11 +63,12 @@ const ChatHome: React.FC = () => {
           }
         } catch (err) {
           console.error('Error creating initial chat:', err);
+          setHasCreatedInitialChat(true); // Prevent infinite retries
         }
       };
       createInitialChat();
     }
-  }, [user?.id, hasCreatedInitialChat, createChat]);
+  }, [user?.id, chats.length, hasCreatedInitialChat, createChat]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -134,17 +135,8 @@ const ChatHome: React.FC = () => {
               isNewChat={newChatIds.has(selectedChatId)}
             />
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center relative px-4 sm:px-6">
-              <div className="text-center max-w-4xl mx-auto animate-fade-in">
-                {/* Main Welcome Message */}
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4 sm:mb-6">
-                  Welcome to ChatMind AI
-                </h1>
-                
-                <p className="text-lg sm:text-xl text-gray-400 mb-8 sm:mb-12">
-                  Your intelligent conversation partner. Start a new chat to begin exploring ideas, getting answers, and having meaningful conversations.
-                </p>
-              </div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
             </div>
           )}
         </div>
