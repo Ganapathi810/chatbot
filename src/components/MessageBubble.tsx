@@ -67,26 +67,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isStreaming = fa
   };
 
   return (
-    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-4 sm:mb-6 animate-fade-in`}>
+    <div className={`flex ${!message.is_bot ? 'justify-end' : 'justify-start'} mb-6 sm:mb-8 animate-fade-in`}>
       <div className={`max-w-[85%] sm:max-w-[80%] ${!message.is_bot ? 'ml-8 sm:ml-12' : 'mr-8 sm:mr-12'}`}>
-        <div className={`flex items-start space-x-2 sm:space-x-3 ${!message.is_bot ? 'flex-row-reverse space-x-reverse' : ''}`}>
+        <div className={`flex items-start ${!message.is_bot ? 'flex-row-reverse' : ''}`}>
           {/* Avatar */}
-          <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
             message.is_bot 
               ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25'
               : 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25' 
           }`}>
             {!message.is_bot ? (
-              <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+              <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             ) : (
-              <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+              <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             )}
           </div>
 
           {/* Message Content */}
-          <div className={`relative group ${!message.is_bot ? 'flex flex-col items-end' : ''}`}>
+          <div className={`relative group ${!message.is_bot ? 'flex flex-col items-end mr-3 sm:mr-4' : 'ml-3 sm:ml-4'}`}>
             {/* Name above message */}
-            <div className={`text-xs text-gray-400 mb-1 ${!message.is_bot ? 'text-right' : 'text-left'} hidden sm:block`}>
+            <div className={`text-xs text-gray-400 mb-2 ${!message.is_bot ? 'text-right' : 'text-left'}`}>
               {!message.is_bot ? getUserDisplayName() : 'ChatMind AI'}
             </div>
             
