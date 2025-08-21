@@ -133,7 +133,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (chat.messages.length > 0) {
       return chat.messages[0].content;
     }
-    return chat.title;
+    // Extract number from title if it exists, otherwise use a default
+    const match = chat.title.match(/New Chat (\d+)/);
+    if (match) {
+      return `New Chat ${match[1]}`;
+    }
+    // Fallback for chats without proper numbering
+    return "New Chat";
   };
 
   return (
@@ -272,10 +278,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <div className="flex-1 min-w-0 flex items-center justify-between">
                           <div className="flex-1 min-w-0">
                             <h3 className="font-medium truncate">
-                              {chat.messages.length > 0 
-                                ? truncateTitle(chat.messages[0].content, 35)
-                                : truncateTitle(chat.title, 35)
-                              }
+                              {truncateTitle(getChatDisplayTitle(chat), 35)}
                             </h3>
                           </div>
                           <div className="flex-shrink-0 ml-2">
