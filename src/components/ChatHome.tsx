@@ -15,6 +15,8 @@ const ChatHome: React.FC = () => {
   const { data } = useQuery(GET_CHATS);
   const [createChat] = useMutation(CREATE_CHAT, {
     refetchQueries: [{ query: GET_CHATS }],
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: false,
   });
   const user = useUserData();
 

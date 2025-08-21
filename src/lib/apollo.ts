@@ -44,5 +44,32 @@ const splitLink = split(
 
 export const apolloClient = new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          chats: {
+            merge(existing = [], incoming) {
+              return incoming;
+            },
+          },
+          messages: {
+            merge(existing = [], incoming) {
+              return incoming;
+            },
+          },
+        },
+      },
+    },
+  }),
+  defaultOptions: {
+    watchQuery: {
+      errorPolicy: 'ignore',
+      fetchPolicy: 'cache-first',
+    },
+    query: {
+      errorPolicy: 'ignore',
+      fetchPolicy: 'cache-first',
+    },
+  },
 });

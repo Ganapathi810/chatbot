@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useSubscription, useMutation } from '@apollo/client';
+import { useSubscription, useMutation, useQuery } from '@apollo/client';
 import { useUserData } from '@nhost/react';
-import { SUBSCRIBE_TO_MESSAGES, SEND_MESSAGE, TRIGGER_CHATBOT } from '../graphql/queries';
+import { SUBSCRIBE_TO_MESSAGES, SEND_MESSAGE, TRIGGER_CHATBOT, GET_CHAT_MESSAGES } from '../graphql/queries';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import ChatInput from './ChatInput';
@@ -28,14 +28,27 @@ const MessageView: React.FC<MessageViewProps> = ({ chatId, isNewChat = false, is
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const user = useUserData();
 
-  const { data, loading, error } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
+  // Use query for initial load, then subscription for real-time updates
+  const { data: initialData, loading: initialLoading } = useQuery(GET_CHAT_MESSAGES, {
     variables: { chatId },
+    fetchPolicy: 'cache-first',
+    notifyOnNetworkStatusChange: false,
+  });
+
+  const { data: subscriptionData } = useSubscription(SUBSCRIBE_TO_MESSAGES, {
+    variables: { chatId },
+    skip: initialLoading,
   });
 
   const [sendMessage] = useMutation(SEND_MESSAGE);
   const [triggerChatbot] = useMutation(TRIGGER_CHATBOT);
 
-  const messages: Message[] = useMemo(() => data?.messages || [], [data?.messages]);
+  const messages: Message[] = useMemo(() => {
+    const data = subscriptionData || initialData;
+    return data?.messages || [];
+  }, [subscriptionData, initialData]);
+
+  const loading = initialLoading;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ 
