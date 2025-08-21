@@ -106,7 +106,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading, hasMess
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything"
                 disabled={isLoading}
-                className="w-full px-6 py-4 pr-16 bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-gray-500/50 focus:border-orange-500/50 focus:shadow-lg focus:shadow-orange-500/20 text-white placeholder-gray-400 resize-none focus:outline-none focus:bg-gray-800/50 min-h-[60px] max-h-[200px] overflow-y-auto text-base transition-all duration-300"
+                className="w-full px-6 py-4 pr-16 bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-600/50 hover:border-gray-500/50 focus:border-orange-500/50 focus:shadow-lg focus:shadow-orange-500/20 text-white placeholder-gray-400 resize-none outline-none focus:outline-none focus:bg-gray-800/50 min-h-[60px] max-h-[200px] overflow-y-auto text-base transition-colors duration-300"
                 rows={1}
               />
               
